@@ -8,8 +8,8 @@ from labelTabel import REGS, INST_I, INST_J, INST_R, RType, IType
 
 def main():
     inp = sys.argv[1]
-    out = sys.argv[2]
-    outfile = open(out, "w")
+    # out = sys.argv[2]
+    # outfile = open(out, "w")
     if os.path.exists(inp):
         f = open(inp, "r")
         labels = label_detect(f)
@@ -22,17 +22,29 @@ def main():
                 break
         while True:
             line = f.readline()
-            code = parse(line)
-            outfile.write(code)
-            if outfile.tell() >= eof:
+            code = parse_code(line)
+            # outfile.write(code)
+            if f.tell() >= eof:
                 break
-            else:
-                outfile.write("\n")
+            # else:
+            #     outfile.write("\n")
     else:
         return
 
-def parse(line):
-    return "1"
+
+def parse_code(line):
+    line = line.replace(",", "").replace("\n", "")
+    if line.find("#") != -1:
+        line = line.split("#")[0]
+    if line.find(":") != -1:
+        line = line.split(":")[1]
+    words = line.split(" ")
+    ignore = ["", " "]
+    for i in ignore:
+        while i in words:
+            words.remove(i)
+    print(words)
+    return
 
 
 if __name__ == '__main__':
