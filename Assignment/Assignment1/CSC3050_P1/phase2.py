@@ -1,13 +1,16 @@
 import sys
 import os
 from phase1 import label_detect
-from labelTabel import REGS, INST_I, INST_J, INST_R, RType, IType
+from labelTabel import REGS, INST_I, INST_J, INST_R, RType, IType, JType
 
 START_ADDR = 0x400000
 
 
 def main():
     inp = sys.argv[1]
+    """
+    need to be changed
+    """
     # out = sys.argv[2]
     # outfile = open(out, "w")
     codes = []
@@ -62,8 +65,8 @@ def parse_code(line):
         return
     func = words[0]
     paras = words[1:]
-    ### TODO
-    # Rtype
+
+    # RType
     if func in INST_R.keys():
         inst = RType(INST_R[func][0], INST_R[func][1])
         fields = INST_R[func][2]
@@ -73,12 +76,12 @@ def parse_code(line):
         for p in packs:
             inst.set_field(p)
         return inst.print_code()
-
-    # Itype
+    # TODO
+    # IType
     elif func in INST_I.keys():
         pass
 
-    # Jtype
+    # JType
     elif func in INST_J.keys():
         pass
     else:

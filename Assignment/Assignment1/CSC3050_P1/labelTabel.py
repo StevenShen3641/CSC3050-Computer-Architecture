@@ -123,7 +123,7 @@ class JType:
         :param op: opcode
         """
         self.op = op
-        self.label ="0" * 26
+        self.label = "0" * 26
 
     def set_label(self, label: str):
         self.label = label
