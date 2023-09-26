@@ -14,6 +14,7 @@ def main():
     if os.path.exists(inp):
         f = open(inp, "rb")
         labels = label_detect(f)
+        print(labels)
         f.seek(0, 2)
         eof = f.tell()
         f.seek(0, 0)
@@ -31,7 +32,7 @@ def main():
                     continue
             codes.append(code)
         """
-        need to be change
+        need to be changed
         """
         flag = False
         for c in codes:

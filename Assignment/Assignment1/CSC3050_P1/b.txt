@@ -4,5 +4,7 @@ add $s0, $a0, $zero
 add $s1, $zero, $v0
 b:
 xor   $t8, $a0, $a1
+xor   $t8, $a0, $a1
+end:
 
 

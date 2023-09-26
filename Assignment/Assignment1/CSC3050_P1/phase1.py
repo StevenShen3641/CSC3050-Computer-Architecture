@@ -11,20 +11,19 @@ def label_detect(file):
     file.seek(0, 2)
     eof = file.tell()
     file.seek(0, 0)
+    # locate the start of the code
     while True:
         line = str(file.readline(), "utf-8")
         if line.find(".text") != -1:
             break
     address = START_ADDR
+    # find labels
     while True:
         line = str(file.readline(), "utf-8")
         line = line.replace("\n", "").replace("\r", "")
         # remove comment
         if line.find("#") != -1:
             line = line.split("#")[0]
-        # end of file
-        if file.tell() >= eof:
-            break
         # get label
         if line.find(":") != -1:
             label = line.split(":")[0].replace(" ", "").replace("\t", "")
@@ -33,4 +32,7 @@ def label_detect(file):
         joined_line = line.replace(" ", "").replace("\t", "")
         if len(joined_line) != 0 and joined_line[-1] != ":":
             address += 1
+        # end of file
+        if file.tell() >= eof:
+            break
     return label_addresses

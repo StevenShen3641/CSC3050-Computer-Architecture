@@ -64,7 +64,8 @@ INST_I = {
 }
 
 INST_J = {
-
+    "j": [0x02, ["label"]],
+    "jal": [0x03, ["label"]]
 }
 
 
@@ -122,14 +123,12 @@ class JType:
         :param op: opcode
         """
         self.op = op
-        self.fields = {
-        }
+        self.label ="0" * 26
 
-    def set_field(self, field):
-        """
-        TODO
-        """
+    def set_label(self, label: str):
+        self.label = label
         return
 
     def print_code(self):
-        pass
+        code = "".join(f"{self.op:06b}") + self.label
+        return code

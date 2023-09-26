@@ -1,16 +1,2 @@
-from labelTabel import INST_R, REGS
-
-f = open("b.txt", "rb")
-print(f.seek(0, 2))
-f.seek(0, 0)
-print(f.tell())
-print(f.readline())
-print(f.tell())
-f.readline()
-print(f.tell())
-print(f.readline())
-print(f.tell())
-print(f.readline())
-print(f.tell())
-print(f.readline())
-print(f.tell())
+a = " asdf fasd  "
+print(("0" * 26))
