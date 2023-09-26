@@ -84,12 +84,14 @@ class RType:
             "sa": "00000"
         }
 
-    def set_field(self, field):
+    def set_field(self, field: tuple):
         self.fields[field[0]] = field[1]
         return
 
     def print_code(self):
-        pass
+        code = "".join(f"{self.op:06b}") + self.fields["rs"] + self.fields["rt"] + self.fields["rd"] + \
+               self.fields["sa"] + "".join(f"{self.func:06b}")
+        return code
 
 
 class IType:

@@ -1,5 +1,3 @@
-import os
-
 START_ADDR = 0x400000
 
 
@@ -14,18 +12,20 @@ def label_detect(file):
     eof = file.tell()
     file.seek(0, 0)
     while True:
-        line = file.readline()
+        line = str(file.readline(), "utf-8")
         if line.find(".text") != -1:
             break
     address = START_ADDR
     while True:
-        line = file.readline()
-        line = line.replace("\n", "")
+        line = str(file.readline(), "utf-8")
+        line = line.replace("\n", "").replace("\r", "")
+        # remove comment
         if line.find("#") != -1:
             line = line.split("#")[0]
         # end of file
         if file.tell() >= eof:
             break
+        # get label
         if line.find(":") != -1:
             label = line.split(":")[0].replace(" ", "").replace("\t", "")
             label_addresses[label] = address
