@@ -1,5 +1,5 @@
-a = [1, 2, 3]
-b = a[-2:]
-a = a[:-2]
-a.append(b)
-print(a)
+paras = ["$at", "$zero", "-13", "0", "$0"]
+
+temp = ["$zero" if i == "$0" else i for i in paras]
+paras = temp
+print(paras)

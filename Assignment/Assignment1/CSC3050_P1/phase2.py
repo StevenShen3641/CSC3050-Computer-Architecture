@@ -71,6 +71,9 @@ def parse_code(line, labels, current_addr):
         return
     func = words[0]
     paras = words[1:]
+    # eliminate the effect of $0
+    temp = ["$zero" if i == "$0" else i for i in paras]
+    paras = temp
     if flag:
         im_rs = paras[-2:]
         paras = paras[:-2]
@@ -100,6 +103,7 @@ def parse_code(line, labels, current_addr):
                 inst.set_field((p[0], "".join(f"{int(p[1]) & 0xffff:016b}")))
             elif p[0] == "label":
                 label = p[1]
+                # elif TODO: if it's integer
                 addr = labels[label]
                 relative_addr = (addr - current_addr - 4) // 4
                 inst.set_field(("im", "".join(f"{relative_addr & 0xffff:016b}")))
@@ -121,6 +125,7 @@ def parse_code(line, labels, current_addr):
             coded_addr = addr // 4
             inst.set_label("".join(f"{coded_addr:026b}"))
             return inst.print_code()
+        # elif TODO: if it's integer
         else:
             return
     else:
