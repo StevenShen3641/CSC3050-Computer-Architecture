@@ -2,7 +2,7 @@ REGS = ["$zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3", "$t0", "$t1", 
         "$t7", "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7", "$t8", "$t9", "$k0", "$k1", "$gp", "$sp", "$fp",
         "$ra"]
 
-# FIELDS = ["null", "rd", "rs", "rt", "sa", "im", "label", "im(rs)"]
+# FIELDS = ["null", "rd", "rs", "rt", "sa", "im", "target", "im(rs)"]
 
 INST_R = {
     "add": [0x00, 0x20, ["rd", "rs", "rt"]],
@@ -38,12 +38,12 @@ INST_I = {
     "addi": [0x08, ["rt", "rs", "im"]],
     "addiu": [0x09, ["rt", "rs", "im"]],
     "andi": [0x0C, ["rt", "rs", "im"]],
-    "beq": [0x04, ["rs", "rt", "label"]],
-    "bgez": [0x01, ["rs", "label"]],
-    "bgtz": [0x07, ["rs", "label"]],
-    "blez": [0x06, ["rs", "label"]],
-    "bltz": [0x01, ["rs", "label"]],
-    "bne": [0x05, ["rs", "rt", "label"]],
+    "beq": [0x04, ["rs", "rt", "target"]],
+    "bgez": [0x01, ["rs", "target"]],
+    "bgtz": [0x07, ["rs", "target"]],
+    "blez": [0x06, ["rs", "target"]],
+    "bltz": [0x01, ["rs", "target"]],
+    "bne": [0x05, ["rs", "rt", "target"]],
     "lb": [0x20, ["rt", "im_rs"]],
     "lbu": [0x24, ["rt", "im_rs"]],
     "lh": [0x21, ["rt", "im_rs"]],
@@ -64,8 +64,8 @@ INST_I = {
 }
 
 INST_J = {
-    "j": [0x02, ["label"]],
-    "jal": [0x03, ["label"]]
+    "j": [0x02, ["target"]],
+    "jal": [0x03, ["target"]]
 }
 
 
@@ -123,12 +123,12 @@ class JType:
         :param op: opcode
         """
         self.op = op
-        self.label = "0" * 26
+        self.target = "0" * 26
 
-    def set_label(self, label: str):
-        self.label = label
+    def set_label(self, target: str):
+        self.target = target
         return
 
     def print_code(self):
-        code = "".join(f"{self.op:06b}") + self.label
+        code = "".join(f"{self.op:06b}") + self.target
         return code

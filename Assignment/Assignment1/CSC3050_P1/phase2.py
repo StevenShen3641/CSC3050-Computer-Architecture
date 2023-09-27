@@ -27,7 +27,7 @@ def main():
                 break
         while True:
             line = str(f.readline(), "utf-8")
-            code = parse_code(line)
+            code = parse_code(line, labels)
             if code is None:
                 if f.tell() >= eof:
                     break
@@ -50,12 +50,12 @@ def main():
         return
 
 
-def parse_code(line):
+def parse_code(line, labels):
     line = line.replace(",", "").replace("\n", "").replace("\r", "")
     # remove comment
     if line.find("#") != -1:
         line = line.split("#")[0]
-    # remove label
+    # remove target
     if line.find(":") != -1:
         line = line.split(":")[1]
     words = line.split()
@@ -83,10 +83,17 @@ def parse_code(line):
 
     # JType
     elif func in INST_J.keys():
-        pass
+        inst = JType(INST_J[func][0])
+        label = paras[0]
+        if label in labels.keys():
+            addr = labels[label]
+            coded_addr = addr // 4
+            inst.set_label(f"{coded_addr:026b}")
+            return inst.print_code()
+        else:
+            return
     else:
         return
-    ###
 
 
 if __name__ == '__main__':

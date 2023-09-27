@@ -8,6 +8,8 @@ b:
 xor   $t8, $a0, $a1
 xor   $t8, $a0, $a1
 end:
-xor   $t8, $a0, $a1
+jal b
+jal end
+jal main
 
 
