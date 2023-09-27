@@ -85,7 +85,7 @@ class RType:
             "sa": "00000"
         }
 
-    def set_field(self, field: tuple):
+    def set_field(self, field: tuple[str, str]):
         self.fields[field[0]] = field[1]
         return
 
@@ -108,7 +108,7 @@ class IType:
             "im": "0" * 16
         }
 
-    def set_field(self, field: tuple):
+    def set_field(self, field: tuple[str, str]):
         self.fields[field[0]] = field[1]
         return
 

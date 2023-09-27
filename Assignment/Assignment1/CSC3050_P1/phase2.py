@@ -41,14 +41,10 @@ def main():
         """
         need to be changed
         """
-        flag = False
         for c in codes:
-            if flag:
-                # outfile.write("\n")
-                print("")
             # outfile.write(c)
-            print(c, end="")
-            flag = True
+            # outfile.write("\n")
+            print(c)
 
     else:
         return
@@ -80,21 +76,32 @@ def parse_code(line, labels, current_addr):
         for p in packs:
             inst.set_field(p)
         return inst.print_code()
-    # TODO
+
     # IType
     elif func in INST_I.keys():
-        inst = IType(INST_R[func][0])
+        inst = IType(INST_I[func][0])
         fields = INST_I[func][1]
         packs = list(zip(fields, paras))
         for p in packs:
             if p[0] in ["rs", "rt"]:
                 inst.set_field((p[0], "".join(f"{REGS.index(p[1]):05b}")))
-            elif p[0] is "im":
-                inst.set_field((p[0], "".join(f"{p[1] & 0xffff:016b}")))
-            elif p[0] is "label":
-                pass
+            elif p[0] == "im":
+                # no need to distinguish signed and unsigned
+                inst.set_field((p[0], "".join(f"{int(p[1]) & 0xffff:016b}")))
+            elif p[0] == "label":
+                label = p[1]
+                addr = labels[label]
+                relative_addr = (addr - current_addr - 4) // 4
+                inst.set_field(("im", "".join(f"{relative_addr & 0xffff:016b}")))
             else:  # "im_rs"
-                pass
+                data = p[1]
+                data = data.replace(")", "").split("(")
+                inst.set_field(("im", "".join(f"{int(data[0]) & 0xffff:016b}")))
+                inst.set_field(("rs", "".join(f"{REGS.index(data[1]):05b}")))
+        # special case for "bgez"
+        if func == "bgez":
+            inst.set_field(("rt", "00001"))
+        return inst.print_code()
 
     # JType
     elif func in INST_J.keys():
