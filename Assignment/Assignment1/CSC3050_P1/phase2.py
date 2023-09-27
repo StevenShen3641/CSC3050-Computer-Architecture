@@ -25,15 +25,19 @@ def main():
             line = str(f.readline(), "utf-8")
             if line.find(".text") != -1:
                 break
+        address = START_ADDR
         while True:
             line = str(f.readline(), "utf-8")
-            code = parse_code(line, labels)
+            code = parse_code(line, labels, address)
             if code is None:
                 if f.tell() >= eof:
                     break
                 else:
                     continue
             codes.append(code)
+            joined_line = line.replace(" ", "").replace("\t", "")
+            if len(joined_line) != 0 and joined_line[-1] != ":":
+                address += 4
         """
         need to be changed
         """
@@ -50,7 +54,7 @@ def main():
         return
 
 
-def parse_code(line, labels):
+def parse_code(line, labels, current_addr):
     line = line.replace(",", "").replace("\n", "").replace("\r", "")
     # remove comment
     if line.find("#") != -1:
@@ -79,7 +83,18 @@ def parse_code(line, labels):
     # TODO
     # IType
     elif func in INST_I.keys():
-        pass
+        inst = IType(INST_R[func][0])
+        fields = INST_I[func][1]
+        packs = list(zip(fields, paras))
+        for p in packs:
+            if p[0] in ["rs", "rt"]:
+                inst.set_field((p[0], "".join(f"{REGS.index(p[1]):05b}")))
+            elif p[0] is "im":
+                inst.set_field((p[0], "".join(f"{p[1] & 0xffff:016b}")))
+            elif p[0] is "label":
+                pass
+            else:  # "im_rs"
+                pass
 
     # JType
     elif func in INST_J.keys():
@@ -88,7 +103,7 @@ def parse_code(line, labels):
         if label in labels.keys():
             addr = labels[label]
             coded_addr = addr // 4
-            inst.set_label(f"{coded_addr:026b}")
+            inst.set_label("".join(f"{coded_addr:026b}"))
             return inst.print_code()
         else:
             return

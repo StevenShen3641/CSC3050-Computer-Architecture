@@ -11,5 +11,6 @@ end:
 jal b
 jal end
 jal main
+syscall
 
 

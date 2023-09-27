@@ -38,12 +38,12 @@ INST_I = {
     "addi": [0x08, ["rt", "rs", "im"]],
     "addiu": [0x09, ["rt", "rs", "im"]],
     "andi": [0x0C, ["rt", "rs", "im"]],
-    "beq": [0x04, ["rs", "rt", "target"]],
-    "bgez": [0x01, ["rs", "target"]],
-    "bgtz": [0x07, ["rs", "target"]],
-    "blez": [0x06, ["rs", "target"]],
-    "bltz": [0x01, ["rs", "target"]],
-    "bne": [0x05, ["rs", "rt", "target"]],
+    "beq": [0x04, ["rs", "rt", "label"]],
+    "bgez": [0x01, ["rs", "label"]],
+    "bgtz": [0x07, ["rs", "label"]],
+    "blez": [0x06, ["rs", "label"]],
+    "bltz": [0x01, ["rs", "label"]],
+    "bne": [0x05, ["rs", "rt", "label"]],
     "lb": [0x20, ["rt", "im_rs"]],
     "lbu": [0x24, ["rt", "im_rs"]],
     "lh": [0x21, ["rt", "im_rs"]],
@@ -64,8 +64,8 @@ INST_I = {
 }
 
 INST_J = {
-    "j": [0x02, ["target"]],
-    "jal": [0x03, ["target"]]
+    "j": [0x02, ["label"]],
+    "jal": [0x03, ["label"]]
 }
 
 
@@ -108,13 +108,13 @@ class IType:
             "im": "0" * 16
         }
 
-    def set_field(self, field):
+    def set_field(self, field: tuple):
         self.fields[field[0]] = field[1]
         return
 
     def print_code(self):
-        pass
-
+        code = "".join(f"{self.op:06b}") + self.fields["rs"] + self.fields["rt"] + self.fields["im"]
+        return code
 
 class JType:
     def __init__(self, op: str):
