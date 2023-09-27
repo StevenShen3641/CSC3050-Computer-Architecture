@@ -20,6 +20,9 @@ def label_detect(file):
     # find labels
     while True:
         line = str(file.readline(), "utf-8")
+        # avoid situation that .data appears below .text
+        if line.find(".data") != -1:
+            break
         line = line.replace("\n", "").replace("\r", "")
         # remove comment
         if line.find("#") != -1:

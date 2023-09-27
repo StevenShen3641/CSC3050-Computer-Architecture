@@ -27,6 +27,9 @@ def main():
         address = START_ADDR
         while True:
             line = str(f.readline(), "utf-8")
+            # avoid situation that .data appears below .text
+            if line.find(".data") != -1:
+                break
             code = parse_code(line, labels, address)
             if code is None:
                 if f.tell() >= eof:
