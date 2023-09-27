@@ -11,13 +11,12 @@ def main():
     """
     need to be changed
     """
-    # out = sys.argv[2]
-    # outfile = open(out, "w")
+    out = sys.argv[2]
+    outfile = open(out, "w")
     codes = []
     if os.path.exists(inp):
         f = open(inp, "rb")
         labels = label_detect(f)
-        print(labels)
         f.seek(0, 2)
         eof = f.tell()
         f.seek(0, 0)
@@ -42,9 +41,8 @@ def main():
         need to be changed
         """
         for c in codes:
-            # outfile.write(c)
-            # outfile.write("\n")
-            print(c)
+            outfile.write(c)
+            outfile.write("\n")
 
     else:
         return

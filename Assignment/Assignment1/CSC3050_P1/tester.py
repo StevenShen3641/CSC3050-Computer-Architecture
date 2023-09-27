@@ -7,7 +7,7 @@ output_file=sys.argv[2]
 expectedoutput_file=sys.argv[3]
 
 # conduct phase2.py to do compiling
-os.system("python phase2.py")
+os.system(f"python phase2.py {test_file} {output_file}")
 
 # read and store the content in the output file and expected outputfile seperately
 with open(output_file,"r") as file_object:
