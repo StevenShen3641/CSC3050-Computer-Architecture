@@ -116,6 +116,7 @@ class IType:
         code = "".join(f"{self.op:06b}") + self.fields["rs"] + self.fields["rt"] + self.fields["im"]
         return code
 
+
 class JType:
     def __init__(self, op: str):
         """

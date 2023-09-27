@@ -51,6 +51,7 @@ def main():
 
 
 def parse_code(line, labels, current_addr):
+    flag = False
     line = line.replace(",", "").replace("\n", "").replace("\r", "")
     # remove comment
     if line.find("#") != -1:
@@ -58,6 +59,10 @@ def parse_code(line, labels, current_addr):
     # remove target
     if line.find(":") != -1:
         line = line.split(":")[1]
+    # for im(rs)
+    if line.find("(") != -1:
+        flag = True
+        line = line.replace("(", " ").replace(")", "")
     words = line.split()
     while "" in words:
         words.remove("")
@@ -65,6 +70,10 @@ def parse_code(line, labels, current_addr):
         return
     func = words[0]
     paras = words[1:]
+    if flag:
+        im_rs = paras[-2:]
+        paras = paras[:-2]
+        paras.append(im_rs)
 
     # RType
     if func in INST_R.keys():
@@ -95,7 +104,6 @@ def parse_code(line, labels, current_addr):
                 inst.set_field(("im", "".join(f"{relative_addr & 0xffff:016b}")))
             else:  # "im_rs"
                 data = p[1]
-                data = data.replace(")", "").split("(")
                 inst.set_field(("im", "".join(f"{int(data[0]) & 0xffff:016b}")))
                 inst.set_field(("rs", "".join(f"{REGS.index(data[1]):05b}")))
         # special case for "bgez"
