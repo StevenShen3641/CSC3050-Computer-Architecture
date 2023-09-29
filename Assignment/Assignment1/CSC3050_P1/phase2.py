@@ -143,9 +143,6 @@ class JType:
 
 def main():
     inp = sys.argv[1]
-    """
-    need to be changed
-    """
     out = sys.argv[2]
     outfile = open(out, "w")
     codes = []
@@ -175,9 +172,6 @@ def main():
             joined_line = line.replace(" ", "").replace("\t", "")
             if len(joined_line) != 0 and joined_line[-1] != ":":
                 address += 4
-        """
-        need to be changed
-        """
         for c in codes:
             outfile.write(c)
             outfile.write("\n")
@@ -245,7 +239,6 @@ def parse_code(line, labels, current_addr):
                 inst.set_field((p[0], "".join(f"{int(p[1]) & 0xffff:016b}")))
             elif p[0] == "label":
                 label = p[1]
-                # elif TODO: if it's integer
                 addr = labels.get_address(label)
                 relative_addr = (addr - current_addr - 4) // 4
                 inst.set_field(("im", "".join(f"{relative_addr & 0xffff:016b}")))
@@ -267,7 +260,6 @@ def parse_code(line, labels, current_addr):
             coded_addr = addr // 4
             inst.set_label("".join(f"{coded_addr:026b}"))
             return inst.print_code()
-        # elif TODO: if it's integer
         else:
             return
     else:
