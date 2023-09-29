@@ -1,3 +1,5 @@
+from labelTable import LabelSet
+
 START_ADDR = 0x400000
 
 
@@ -7,7 +9,7 @@ def label_detect(file):
     :param file: file address
     :return: A dict containing target-address pair
     """
-    label_addresses = {}
+    label_addresses = LabelSet()
     file.seek(0, 2)
     eof = file.tell()
     file.seek(0, 0)
@@ -30,7 +32,7 @@ def label_detect(file):
         # get target
         if line.find(":") != -1:
             label = line.split(":")[0].replace(" ", "").replace("\t", "")
-            label_addresses[label] = address
+            label_addresses.set_label(label, address)
         # check whether address should be increased
         joined_line = line.replace(" ", "").replace("\t", "")
         if len(joined_line) != 0 and joined_line[-1] != ":":
