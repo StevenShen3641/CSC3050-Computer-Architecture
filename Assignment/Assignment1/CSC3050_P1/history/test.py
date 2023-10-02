@@ -1,5 +1,4 @@
-paras = ["$at", "$zero", "-13", "0", "$0"]
+import re
 
-temp = ["$zero" if i == "$0" else i for i in paras]
-paras = temp
-print(paras)
+x = "21   4"
+print(re.split("[ ]+", x))
