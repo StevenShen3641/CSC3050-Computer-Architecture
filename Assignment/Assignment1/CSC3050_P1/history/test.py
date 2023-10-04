@@ -1,4 +1,4 @@
 import re
 
-x = "21   4"
-print(re.split("[ ]+", x))
+print(sorted((2, 1)))
+
