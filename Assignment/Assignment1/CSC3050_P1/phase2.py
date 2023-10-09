@@ -189,7 +189,7 @@ def parse_code(line, labels, current_addr):
     :return: machine code
     """
     flag = False
-    line = line.replace(",", "").replace("\n", "").replace("\r", "")
+    line = line.replace(",", " ").replace("\n", "").replace("\r", "")
     # remove comment
     if line.find("#") != -1:
         line = line.split("#")[0]
@@ -219,11 +219,12 @@ def parse_code(line, labels, current_addr):
     if func in INST_R.keys():
         inst = RType(INST_R[func][0], INST_R[func][1])
         fields = INST_R[func][2]
-        for i in range(len(paras)):
-            paras[i] = "".join(f"{REGS.index(paras[i]):05b}")
         packs = list(zip(fields, paras))
         for p in packs:
-            inst.set_field(p)
+            if p[0] == "sa":
+                inst.set_field((p[0], "".join(f"{int(p[1]) & 0b11111:05b}")))
+            else:
+                inst.set_field((p[0], "".join(f"{REGS.index(p[1]):05b}")))
         return inst.print_code()
 
     # IType

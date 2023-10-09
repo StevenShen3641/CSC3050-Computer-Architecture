@@ -1,8 +1,21 @@
     .text
-    .align  2
-    .globl  main
 main:
-    subu    $sp, $sp, 32
-    sw      $ra, 20($sp)
-    sd      $a0, 32($sp)
-    sw      $0
+    add     $sp, $sp, $sp
+    addu    $sp, $sp, $sp
+    div     $sp, $sp
+    divu    $sp, $sp
+    jalr    $sp, $sp
+    jr      $sp
+    mfhi    $sp
+    mflo    $sp
+    mthi    $sp
+    mtlo    $sp
+    mult    $sp, $sp
+    multu   $sp, $sp
+    nor     $sp, $sp, $sp
+    or      $sp, $sp, $sp
+    sll     $sp, $sp,  10
+    sllv    $sp, $sp, $sp
+    slt     $sp, $sp, $sp
+    sltu    $sp, $sp, $sp
+    sra     $sp, $sp,10
