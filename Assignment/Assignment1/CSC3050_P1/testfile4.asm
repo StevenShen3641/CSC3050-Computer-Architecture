@@ -18,4 +18,4 @@ main:
     sllv    $sp, $sp, $sp
     slt     $sp, $sp, $sp
     sltu    $sp, $sp, $sp
-    sra     $sp, $sp,10
+    sra     $sp, $sp,-1
