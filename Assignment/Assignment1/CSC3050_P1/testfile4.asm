@@ -18,4 +18,12 @@ main:
     sllv    $sp, $sp, $sp
     slt     $sp, $sp, $sp
     sltu    $sp, $sp, $sp
-    sra     $sp, $sp,-1
+    sra     $sp, $sp, 8
+    srav    $sp, $sp, $sp
+    srl     $sp, $sp, 7
+    srlv    $sp, $sp, $sp
+    sub     $sp, $sp, $sp
+    subu    $sp, $sp, $sp
+    syscall
+    xor     $sp, $sp, $sp
+    
