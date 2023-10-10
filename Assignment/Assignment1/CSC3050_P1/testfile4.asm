@@ -1,13 +1,15 @@
     .text
 main:
-    add     $sp, $sp, $sp
-    addu    $sp, $sp, $sp
-    div     $sp, $sp
-    divu    $sp, $sp
-    jalr    $sp, $sp
-    jr      $sp
-    mfhi    $sp
-    a:
+#a:
+#x:
+    add     $sp, $sp, $sp#
+    addu    $sp, $sp, $sp#
+    div     $sp, $sp#
+    divu    $sp, $sp  #
+    jalr    $sp, $sp        #saffs
+    jr      $sp#  sdfwq
+    mfhi    $sp             #  fsa
+    a:# asdf
     mflo    $sp
     mthi    $sp
     mtlo    $sp
@@ -15,7 +17,7 @@ main:
     multu   $sp, $sp
     nor     $sp, $sp,$sp
     or      $sp,$sp, $sp
-    b:
+    b:  #   qwre
     sll     $sp, $sp,  10
     sllv $sp,$sp,$sp
     slt     $sp, $sp, $sp
