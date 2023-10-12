@@ -154,6 +154,8 @@ def main():
         f.seek(0, 0)
         while True:
             line = str(f.readline(), "utf-8")
+            if line.find("#") != -1:
+                line = line.split("#")[0]
             if line.find(".text") != -1:
                 break
         address = START_ADDR
