@@ -16,19 +16,21 @@ def label_detect(file):
     # locate the start of the code
     while True:
         line = str(file.readline(), "utf-8")
+        if line.find("#") != -1:
+            line = line.split("#")[0]
         if line.find(".text") != -1:
             break
     address = START_ADDR
     # find labels
     while True:
         line = str(file.readline(), "utf-8")
-        # avoid situation that .data appears below .text
-        if line.find(".data") != -1:
-            break
         line = line.replace("\n", "").replace("\r", "")
         # remove comment
         if line.find("#") != -1:
             line = line.split("#")[0]
+        # avoid situation that .data appears below .text
+        if line.find(".data") != -1:
+            break
         # get target
         if line.find(":") != -1:
             label = line.split(":")[0].replace(" ", "").replace("\t", "")
