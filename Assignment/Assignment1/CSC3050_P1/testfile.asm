@@ -1,4 +1,3 @@
-# .text
 .text
 lw $t1, -400($fp)
 lw $t2, 400($fp)
