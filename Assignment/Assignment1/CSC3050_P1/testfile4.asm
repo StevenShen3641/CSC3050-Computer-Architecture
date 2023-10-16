@@ -51,4 +51,6 @@ main:
     lwr     $sp, 5($sp)
     swl     $sp, 3($sp)
     swr     $sp, 9($sp)
-
+    j   a
+    j   b
+    j   c
