@@ -27,4 +27,4 @@ util.o : util.cpp util.h
 		$(cc) -c util.cpp
 
 clean :
-		rm simulator $(objects)
+		del simulator $(objects) *.exe

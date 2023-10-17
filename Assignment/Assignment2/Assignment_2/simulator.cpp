@@ -11,11 +11,12 @@ std::string Simulator::BYTE = ".byte";
 std::string Simulator::HALF = ".half";
 std::string Simulator::WORD = ".word";
 
-Simulator::Simulator(std::string _inputAsm, std::string _inputBin, std::string _outputCheckPts, std::string _inFile, std::string _outFile) {
+Simulator::Simulator(std::string _inputAsm, std::string _inputBin, std::string _outputCheckPts, std::string _inFile,
+                     std::string _outFile) {
     std::stringstream ss;
     labelTable.pass1(_inputAsm);
     labelTable.pass2(_inputAsm, ss);
-    
+
     std::string inst;
     while (ss >> inst) {
         insts.push_back(inst);
@@ -67,7 +68,7 @@ int Simulator::run() {
         idx = (reg[_pc] - MEM_BIAS) >> 2;
         totalInstCnt++;
     }
-    
+
     if (checkpoints.count(totalInstCnt)) {
         dumpReg(totalInstCnt);
         dumpMem(totalInstCnt);
@@ -170,7 +171,7 @@ void Simulator::execute(std::string inst) {
                     break;
             }
             break;
-        
+
         case I_TYPE:
             switch (opCode) {
                 case 0b001000:
@@ -256,7 +257,7 @@ void Simulator::execute(std::string inst) {
                     break;
             }
             break;
-        
+
         case J_TYPE:
             switch (opCode) {
                 case 0b000010:
@@ -269,7 +270,7 @@ void Simulator::execute(std::string inst) {
                     break;
             }
             break;
-        
+
         default:
             break;
     }
@@ -310,12 +311,12 @@ void Simulator::preprocess() {
     /* Initialize data segment */
     std::ifstream in;
     in.open(inputAsm, std::ios::in);
-    if (! in) {
+    if (!in) {
         /* read input file failed */
         std::cout << inputAsm << " does not exist." << std::endl;
         return;
     }
-    
+
     int insCnt = 0;
     std::string str;
     const std::string dotDataStr = ".data";
@@ -380,7 +381,7 @@ void Simulator::preprocess() {
         }
     }
     in.close();
-    
+
     /* Initialize checkpoints */
     in.open(outputCheckPts);
     int checkpoint;
@@ -390,7 +391,7 @@ void Simulator::preprocess() {
 }
 
 void Simulator::_add() {
-    reg[rd] = (int)reg[rs] + (int)reg[rt];
+    reg[rd] = (int) reg[rs] + (int) reg[rt];
 }
 
 void Simulator::_addu() {
@@ -402,13 +403,13 @@ void Simulator::_and() {
 }
 
 void Simulator::_div() {
-    reg[_lo] = (int)reg[rs] / (int)reg[rt];
-    reg[_hi] = (int)reg[rs] % (int)reg[rt];
+    reg[_lo] = (int) reg[rs] / (int) reg[rt];
+    reg[_hi] = (int) reg[rs] % (int) reg[rt];
 }
 
 void Simulator::_divu() {
     reg[_lo] = reg[rs] / reg[rt];
-    reg[_hi] = reg[rs] % reg[rt]; 
+    reg[_hi] = reg[rs] % reg[rt];
 }
 
 void Simulator::_jalr() {
@@ -465,7 +466,7 @@ void Simulator::_sllv() {
 }
 
 void Simulator::_slt() {
-    reg[rd] = (int)reg[rs] < (int)reg[rt] ? 1 : 0;
+    reg[rd] = (int) reg[rs] < (int) reg[rt] ? 1 : 0;
 }
 
 void Simulator::_sltu() {
@@ -501,7 +502,7 @@ void Simulator::_srlv() {
 }
 
 void Simulator::_sub() {
-    reg[rd] = (int)reg[rs] - (int)reg[rt];
+    reg[rd] = (int) reg[rs] - (int) reg[rt];
 }
 
 void Simulator::_subu() {
@@ -559,11 +560,11 @@ void Simulator::_xor() {
 }
 
 void Simulator::_addi() {
-    reg[rt] = (int)reg[rs] + (short)imm;
+    reg[rt] = (int) reg[rs] + (short) imm;
 }
 
 void Simulator::_addiu() {
-    reg[rt] = reg[rs] + (unsigned short)imm;
+    reg[rt] = reg[rs] + (unsigned short) imm;
 }
 
 void Simulator::_andi() {
@@ -572,51 +573,51 @@ void Simulator::_andi() {
 
 void Simulator::_beq() {
     if (reg[rs] == reg[rt]) {
-        reg[_pc] += (short)imm * 4;
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_bgez() {
-    if ((int)reg[rs] >= 0) {
-        reg[_pc] += (short)imm * 4;
+    if ((int) reg[rs] >= 0) {
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_bgtz() {
-    if ((int)reg[rs] > 0) {
-        reg[_pc] += (short)imm * 4;
+    if ((int) reg[rs] > 0) {
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_blez() {
-    if ((int)reg[rs] <= 0) {
-        reg[_pc] += (short)imm * 4;
+    if ((int) reg[rs] <= 0) {
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_bltz() {
-    if ((int)reg[rs] < 0) {
-        reg[_pc] += (short)imm * 4;
+    if ((int) reg[rs] < 0) {
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_bne() {
     if (reg[rs] != reg[rt]) {
-        reg[_pc] += (short)imm * 4;
+        reg[_pc] += (short) imm * 4;
     }
 }
 
 void Simulator::_lb() {
-    reg[rt] = (char)mem[reg[rs] + (short)imm - MEM_BIAS];
+    reg[rt] = (char) mem[reg[rs] + (short) imm - MEM_BIAS];
 }
 
 void Simulator::_lbu() {
-    reg[rt] = mem[reg[rs] + (short)imm - MEM_BIAS];
+    reg[rt] = mem[reg[rs] + (short) imm - MEM_BIAS];
 }
 
 void Simulator::_lh() {
-    byte hi = mem[reg[rs] + (short)imm - MEM_BIAS + 1];
-    byte lo = mem[reg[rs] + (short)imm - MEM_BIAS];
+    byte hi = mem[reg[rs] + (short) imm - MEM_BIAS + 1];
+    byte lo = mem[reg[rs] + (short) imm - MEM_BIAS];
     reg[rt] = lo | (hi << 8);
     if (hi & 0x80) {
         reg[rt] |= 0xffff << 16;
@@ -624,8 +625,8 @@ void Simulator::_lh() {
 }
 
 void Simulator::_lhu() {
-    byte hi = mem[reg[rs] + (short)imm - MEM_BIAS + 1];
-    byte lo = mem[reg[rs] + (short)imm - MEM_BIAS];
+    byte hi = mem[reg[rs] + (short) imm - MEM_BIAS + 1];
+    byte lo = mem[reg[rs] + (short) imm - MEM_BIAS];
     reg[rt] = lo | (hi << 8);
 }
 
@@ -634,7 +635,7 @@ void Simulator::_lui() {
 }
 
 void Simulator::_lw() {
-    byte *base = mem + reg[rs] + (short)imm - MEM_BIAS;
+    byte *base = mem + reg[rs] + (short) imm - MEM_BIAS;
     reg[rt] = base[0] | (base[1] << 8) | (base[2] << 16) | (base[3] << 24);
 }
 
@@ -643,25 +644,25 @@ void Simulator::_ori() {
 }
 
 void Simulator::_sb() {
-    mem[reg[rs] + (short)imm - MEM_BIAS] = reg[rt] & 0xff;
+    mem[reg[rs] + (short) imm - MEM_BIAS] = reg[rt] & 0xff;
 }
 
 void Simulator::_slti() {
-    reg[rt] = ((int)reg[rs] < (short)imm) ? 1 : 0;
+    reg[rt] = ((int) reg[rs] < (short) imm) ? 1 : 0;
 }
 
 void Simulator::_sltiu() {
-    reg[rt] = (reg[rs] < (unsigned short)imm) ? 1 : 0;
+    reg[rt] = (reg[rs] < (unsigned short) imm) ? 1 : 0;
 }
 
 void Simulator::_sh() {
-    byte *base = mem + reg[rs] + (short)imm - MEM_BIAS;
+    byte *base = mem + reg[rs] + (short) imm - MEM_BIAS;
     base[0] = reg[rt] & 0xff;
     base[1] = reg[rt] >> 8;
 }
 
 void Simulator::_sw() {
-    byte *base = mem + reg[rs] + (short)imm - MEM_BIAS;
+    byte *base = mem + reg[rs] + (short) imm - MEM_BIAS;
     base[0] = reg[rt] & 0xff;
     base[1] = (reg[rt] >> 8) & 0xff;
     base[2] = (reg[rt] >> 16) & 0xff;
@@ -669,12 +670,12 @@ void Simulator::_sw() {
 }
 
 void Simulator::_xori() {
-    reg[rt] = reg[rs] ^ (unsigned short)imm;
+    reg[rt] = reg[rs] ^ (unsigned short) imm;
 }
 
 /* Little endian */
 void Simulator::_lwl() {
-    int idx = reg[rs] + (short)imm - MEM_BIAS;
+    int idx = reg[rs] + (short) imm - MEM_BIAS;
     int lowerBound = idx & (~3);
     for (int i = idx, j = 24; i >= lowerBound; i--, j -= 8) {
         reg[rt] &= ~(0xff << j);
@@ -683,7 +684,7 @@ void Simulator::_lwl() {
 }
 
 void Simulator::_lwr() {
-    int idx = reg[rs] + (short)imm - MEM_BIAS;
+    int idx = reg[rs] + (short) imm - MEM_BIAS;
     int upperBound = (idx + 4) & (~3);
     for (int i = idx, j = 0; i < upperBound; i++, j += 8) {
         reg[rt] &= ~(0xff << j);
@@ -692,7 +693,7 @@ void Simulator::_lwr() {
 }
 
 void Simulator::_swl() {
-    int idx = reg[rs] + (short)imm - MEM_BIAS;
+    int idx = reg[rs] + (short) imm - MEM_BIAS;
     int lowerBound = idx & (~3);
     for (int i = idx, j = 24; i >= lowerBound; i--, j -= 8) {
         mem[i] = (reg[rt] >> j) & 0xff;
@@ -700,7 +701,7 @@ void Simulator::_swl() {
 }
 
 void Simulator::_swr() {
-    int idx = reg[rs] + (short)imm - MEM_BIAS;
+    int idx = reg[rs] + (short) imm - MEM_BIAS;
     int upperBound = (idx + 4) & (~3);
     for (int i = idx, j = 0; i < upperBound; i++, j += 8) {
         mem[i] = (reg[rt] >> j) & 0xff;
@@ -719,7 +720,7 @@ void Simulator::_jal() {
 }
 
 void Simulator::_print_int() {
-    fout << (int)reg[_a0];
+    fout << (int) reg[_a0];
     fout.flush();
 }
 
@@ -755,7 +756,7 @@ void Simulator::_exit() {
 }
 
 void Simulator::_print_char() {
-    fout << (char)reg[_a0];
+    fout << (char) reg[_a0];
     fout.flush();
 }
 
@@ -766,7 +767,7 @@ void Simulator::_read_char() {
 }
 
 void Simulator::_open() {
-    reg[_a0] = open((const char *)mem + reg[_a0] - MEM_BIAS, reg[_a1], reg[_a2]);
+    reg[_a0] = open((const char *) mem + reg[_a0] - MEM_BIAS, reg[_a1], reg[_a2]);
 }
 
 void Simulator::_read() {
@@ -788,12 +789,12 @@ void Simulator::_exit2() {
 
 void Simulator::dumpReg(int instCount) {
     std::ofstream os("register_" + std::to_string(instCount) + ".bin", std::ios::binary);
-    os.write((const char *)reg, (REG_CNT + 3) << 2);
+    os.write((const char *) reg, (REG_CNT + 3) << 2);
     os.close();
 }
 
 void Simulator::dumpMem(int instCount) {
     std::ofstream os("memory_" + std::to_string(instCount) + ".bin", std::ios::binary);
-    os.write((const char *)mem, MAX_MEM_SIZE);
+    os.write((const char *) mem, MAX_MEM_SIZE);
     os.close();
 }

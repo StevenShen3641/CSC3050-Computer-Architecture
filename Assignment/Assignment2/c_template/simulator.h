@@ -5,16 +5,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map>
-#include <cstdint>
-#include <bitset>
 #include <set>
-#include <cstdio>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <bitset>
 
 #define BASE_ADDR 0x400000
 #define STATIC_ADDR 0x500000 // start of static data segment (virtual)

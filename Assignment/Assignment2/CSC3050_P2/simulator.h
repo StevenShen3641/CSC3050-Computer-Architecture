@@ -6,9 +6,28 @@
 #define SIMULATOR_H
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+// registers index
+enum REGS {
+    $zero,
+    $at,
+    $v0, $v1,
+    $a0, $a1, $a2, $a3,
+    $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7,
+    $s0, $s1, $s2, $s3, $s4, $s5, $s6, $s7,
+    $t8, $t9,
+    $k0, $k1,
+    $gp,
+    $sp,
+    $fp,
+    $ra,
+    $pc, $hi, $lo
+};
 
 class Simulator {
 public:
@@ -16,15 +35,20 @@ public:
 
     ~Simulator();
 
+    // initialization
+    void _init(const string &inAsm, const string &inBin);
+
 private:
     // variable
     unsigned int *_regs;
     unsigned char *_block;
+    vector<string> instructions;
 
 
     // constant
     // address
-    const int START_ADDR;
+    const
+    int START_ADDR;
     const int STATIC_ADDR;
     const int STACK_ADDR;
     // data type
@@ -34,15 +58,14 @@ private:
     const string HALF;
     const string Byte;
 
-    // initialization
-    void _init();
-
     // methods
     void _rType(int rs, int rt, int rd, int sa, int func);
 
     void _iType(int op, int rs, int rt, int imm);
 
     void _jType(int op, int target);
+
+    static unsigned int _strToNum(const string &s);
 
 
 };
