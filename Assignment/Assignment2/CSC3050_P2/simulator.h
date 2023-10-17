@@ -38,7 +38,7 @@ private:
     void _init();
 
     // methods
-    void _rType(int rs, int rt, int rd, int sa, int funct);
+    void _rType(int rs, int rt, int rd, int sa, int func);
 
     void _iType(int op, int rs, int rt, int imm);
 
