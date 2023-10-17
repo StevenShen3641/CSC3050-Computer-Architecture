@@ -17,7 +17,7 @@ Simulator::~Simulator() {
 }
 
 void Simulator::_init() {
-    
+
 }
 
 void Simulator::_rType(int rs, int rt, int rd, int sa, int funct) {
