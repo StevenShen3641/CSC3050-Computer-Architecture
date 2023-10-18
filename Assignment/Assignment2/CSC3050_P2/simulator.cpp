@@ -59,10 +59,11 @@ void Simulator::init(const string &inAsm, const string &inBin) {
         if (flag) {
             if (line.find(':') != string::npos) {
                 line = line.substr(line.find_first_not_of(':'));
-                vector<string> v = typeDataSplit(line);
-                string t = v[0];
-                string d = v[1];
+                string t = line.substr(0, line.find_first_of(" \t"));
+                string d = line.substr(line.find_first_of(" \t"));
+                d = trim(d.substr(data.find_first_not_of(" \t")));
                 if (t == ASCII) {
+                    d = escape(d.substr(1, d.size() - 1));
 
                 }
             } else {
@@ -129,15 +130,28 @@ string trim(string s) {
     return s;
 }
 
-vector<string> typeDataSplit(const string& s) {
-    vector<string> res;
-    string type;
-    string data;
-    type = s.substr(0, s.find_first_of(" \t"));
-    data = s.substr(s.find_first_of(" \t"));
-    data = data.substr(data.find_first_not_of(" \t"));
-    res.push_back(type);
-    res.push_back(data);
-    return res;
+string escape(string s) {
+    string res;
+    int pos = 0;
+    while (s.size() > pos) {
+        if (s[pos] == '\\' && s.size() > (pos + 1)) {
+            char next = s[pos + 1];
+            switch (next) {
+                case 'a':
+                    res += '\a';
+                    break;
+                case :
+                case '\\':
+                    res += '\\';
+                    break;
+                case 'n':
+                    res += '\n';
+                    break;
+                case '':
+            }
+            pos += 2;
+        } else {
+            res += s[pos++];
+        }
+    }
 }
-

@@ -27,10 +27,13 @@ vector<string> typeDataSplit(string s) {
 }
 
 int main() {
-    string a = ".sadf\t    \tasdfasfsa";
-    vector<string> x = typeDataSplit(a);
-    for (string s:x) {
-        cout << "\"" << s << "\"" << endl;
-    }
+    ifstream i;
+    i.open("a.txt", ios::in);
+    string m = "asd\\n";
+    string x;
+    getline(i, x);
+    cout << x << endl;
+    cout << m << endl;
+    cout << ('\?' == '?') << endl;
 
 }

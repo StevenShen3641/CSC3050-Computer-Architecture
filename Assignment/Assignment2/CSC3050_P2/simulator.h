@@ -74,7 +74,7 @@ unsigned int strToNum(const string &s);
 
 string trim(string s);
 
-vector<string> typeDataSplit(const string& s);
+string escape(string s);
 
 
 
