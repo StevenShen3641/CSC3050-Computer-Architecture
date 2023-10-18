@@ -12,28 +12,111 @@ typedef unsigned char byte;
 
 using namespace std;
 
-vector<string> typeDataSplit(string s) {
-    vector<string> res;
-    int pos = 0;
-    string type;
-    string data;
-    pos = s.find_first_of(" \t");
-    type = s.substr(0, pos);
-    data = s.substr(pos);
-    data = data.substr(data.find_first_not_of(" \t"));
-    res.push_back(type);
-    res.push_back(data);
+string removeComments(string s) {
+    if (s.find('#') != string::npos) {
+        s = s.substr(0, s.find('#'));
+    }
+    return s;
+}
+
+/// remove blank space, '\t', '\n', .etc of string
+/// \param s input string
+/// \return trimmed string
+string trim(string s) {
+    if (s.empty()) {
+        return s;
+    }
+
+    // remove blank part
+    if (s.find_first_not_of(" \t\n") == string::npos) {
+        return "";
+    }
+    s = s.substr(s.find_first_not_of(" \t\n"));
+    s = s.substr(0, s.find_last_not_of(" \t\n") + 1);
+
+    return s;
+}
+
+string _fetchCode(unsigned int pc=1) {
+    unsigned int _block[10];
+    _block[0] = 1;
+    _block[1] = 2;
+    _block[2] = 3;
+    _block[3] = 4;
+    _block[4] = 5;
+
+    string res = bitset<8>(_block[pc + 3]).to_string() +
+                 bitset<8>(_block[pc + 2]).to_string() +
+                 bitset<8>(_block[pc + 1]).to_string() +
+                 bitset<8>(_block[pc]).to_string();
     return res;
 }
 
 int main() {
-    ifstream i;
-    i.open("a.txt", ios::in);
-    string m = "asd\\n";
-    string x;
-    getline(i, x);
-    cout << x << endl;
-    cout << m << endl;
-    cout << ('\?' == '?') << endl;
-
+    cout << _fetchCode() << endl;
+//    ifstream inA;
+//    ifstream inB;
+//    // data segment
+//    inA.open("a.txt", ios::in);
+//    if (inA.fail()) {
+//        cout << "assembly codes file doesn't open successfully!" << endl;
+//        exit(1);
+//    }
+//
+//    bool flag = false;  // .data detection
+//    int pos = 0;  // current block position
+//    string data = ".data";
+//    string text = ".text";
+//    string line;
+//    while (getline(inA, line)) {
+//        line = removeComments(line);
+//        line = trim(line);  /// need to be decide of #
+//        if (line.empty()) {
+//            continue;
+//        }
+//        if (line.substr(0, 5) == data) {
+//            flag = true;
+//            continue;
+//        }
+//        if (line.substr(0, 5) == text) {
+//            flag = false;
+//            continue;
+//        }
+//        if (flag) {
+//            if (line.find(':') != string::npos) {
+//                if ((line.find('\"') == string::npos) || (line.find(':') < (line.find('\"')))) {
+//                    line = line.substr(line.find(':') + 1);
+//                }
+//            }
+//            line = trim(line);
+//            if (line.empty()) {
+//                continue;
+//            }
+//            string t = line.substr(0, line.find_first_of(" \t"));
+//            cout << "\\" << t << "\\" << endl;
+//            string d = line.substr(line.find_first_of(" \t"));
+//            d = trim(d.substr(data.find_first_not_of(" \t")));  /// need to be decide of #
+//            cout << "\\" << d << "\\" << endl;
+//
+//        }
+//    }
+//    inA.close();
+//
+//
+//    string k = "123, 1234  ,  324\n";
+//    int t = 1;
+//
+//    vector<int> l;
+//    stringstream strStream;
+//    strStream.str(k);
+//    int num;
+//    char comma;
+//    while (strStream >> num) {
+//        l.push_back(num);
+//        strStream >> comma;
+//    }
+//    cout << l.size() << endl;
+//    for(int i:l) {
+//        cout << i << endl;
+//    }
 }
