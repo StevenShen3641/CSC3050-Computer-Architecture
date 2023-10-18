@@ -357,20 +357,20 @@ void Simulator::preprocess() {
                 numList.push_back(num);
                 ss >> ch;
             }
-            for (int i = 0; i < numList.size(); i++) {
+            for (int i : numList) {
                 byte *ptr = mem + TEXT_SEG_SIZE + memUsed;
                 if (dataType == BYTE) {
-                    *ptr = numList[i];
+                    *ptr = i;
                     memUsed++;
                 } else if (dataType == HALF) {
-                    *ptr = numList[i] & 0xff;
-                    *(ptr + 1) = (numList[i] >> 8) & 0xff;
+                    *ptr = i & 0xff;
+                    *(ptr + 1) = (i >> 8) & 0xff;
                     memUsed += 2;
                 } else if (dataType == WORD) {
-                    *ptr = numList[i] & 0xff;
-                    *(ptr + 1) = (numList[i] >> 8) & 0xff;
-                    *(ptr + 2) = (numList[i] >> 16) & 0xff;
-                    *(ptr + 3) = (numList[i] >> 24) & 0xff;
+                    *ptr = i & 0xff;
+                    *(ptr + 1) = (i >> 8) & 0xff;
+                    *(ptr + 2) = (i >> 16) & 0xff;
+                    *(ptr + 3) = (i >> 24) & 0xff;
                     memUsed += 4;
                 }
             }

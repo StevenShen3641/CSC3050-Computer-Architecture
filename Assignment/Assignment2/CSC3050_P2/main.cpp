@@ -12,4 +12,8 @@ int main(int argc, char *argv[]) {
     string inFile = argv[4];
     string outFile = argv[5];
 
+    Simulator simulator;
+    simulator.init(inAsm, inBin);
+    simulator.simulate(inFile, outFile);
+
 }

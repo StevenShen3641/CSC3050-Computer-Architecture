@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <sstream>
+#include <bitset>
 
 #define REG_NUM  35
 
@@ -38,15 +40,23 @@ public:
 
     ~Simulator();
 
-    // initialization
+    /// initialization
+    /// \param inAsm input asm file
+    /// \param inBin input binary code file
     void init(const string &inAsm, const string &inBin);
+
+    /// simulation part
+    /// \param inFile input file
+    /// \param outFile output file
+    void simulate(const string &inFile, const string &outFile);
 
 private:
     // variables
     unsigned int *_regs;
     unsigned char *_block;
-    vector<string> instructions;
-
+    int staticDataPos;  /// need to be check
+    ifstream inF;
+    ofstream outF;
 
     // constants
     // address
@@ -58,22 +68,39 @@ private:
     const string ASCIIZ;
     const string WORD;
     const string HALF;
-    const string Byte;
+    const string BYTE;
+
+    // fetch machine code
+    string _fetchCode(unsigned int pc);
 
     // methods
-    void _rType(int rs, int rt, int rd, int sa, int func);
+    void _rType(string rs, string rt, string rd, string sa, string func);
 
-    void _iType(int op, int rs, int rt, int imm);
+    void _iType(string op, string rs, string rt, string imm);
 
-    void _jType(int op, int target);
+    void _jType(string op, string target);
 
 };
 
 // other relative functions
+/// binary string to corresponding binary number
+/// \param s binary string
+/// \return unsigned integer containing binary number
 unsigned int strToNum(const string &s);
 
+/// remove comments
+/// \param s input string
+/// \return string without comments
+string removeComments(string s);
+
+/// remove blank space, '\t', '\n', .etc of string
+/// \param s input string
+/// \return trimmed string
 string trim(string s);
 
+/// change input string into escaped version
+/// \param s input string
+/// \return escaped version
 string escape(string s);
 
 
