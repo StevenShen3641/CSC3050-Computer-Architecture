@@ -9,6 +9,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstring>
+
+#define REG_NUM  35
 
 using namespace std;
 
@@ -36,19 +39,18 @@ public:
     ~Simulator();
 
     // initialization
-    void _init(const string &inAsm, const string &inBin);
+    void init(const string &inAsm, const string &inBin);
 
 private:
-    // variable
+    // variables
     unsigned int *_regs;
     unsigned char *_block;
     vector<string> instructions;
 
 
-    // constant
+    // constants
     // address
-    const
-    int START_ADDR;
+    const int START_ADDR;
     const int STATIC_ADDR;
     const int STACK_ADDR;
     // data type
@@ -65,10 +67,15 @@ private:
 
     void _jType(int op, int target);
 
-    static unsigned int _strToNum(const string &s);
-
-
 };
+
+// other relative functions
+unsigned int strToNum(const string &s);
+
+string trim(string s);
+
+vector<string> typeDataSplit(const string& s);
+
 
 
 #endif //SIMULATOR_H
