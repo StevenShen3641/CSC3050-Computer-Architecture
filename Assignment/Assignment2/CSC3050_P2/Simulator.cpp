@@ -287,25 +287,34 @@ void Simulator::_rType(unsigned int rs, unsigned int rt, unsigned int rd, unsign
 }
 
 void Simulator::_syscall() {
+    string line;
     switch (this->_regs[$v0]) {
         case 1:  // print_int
-            outF << (int) this->_regs[$a0];
+            outF << (int) this->_regs[$a0] << flush;   /// need to check flush
+            break;
+        case 4:  // print_string
+            outF << this->_block + this->_regs[$a0] - START_ADDR << flush;
+            break;
+        case 5:  // read_int
+            inF >> line;
+            int integer;
+            integer = stoi(line);
+            this->_regs[$v0] = integer;
+            break;
+        case 8:  // read_string
+            inF >> line;
+            line += "\n";
+            for (int i = 0; i < (this->_regs[$a1] - 1) && i < line.size(); i++) {
+                this->_block[this->_regs[$a0] - START_ADDR + i] = line[i];
+            }
+            this->_block[this->_regs[$a0] - START_ADDR + this->_regs[$a1] - 1] = '\0';
+            break;
+        case 9:  // sbrk
+            this->_regs[$v0] = STATIC_ADDR + staticDataPos;  /// need to be check
+            staticDataPos += (int) this->_regs[$a0];
+            break;
+        case 10:  // exit
 
-            break;
-        case 4:
-            //_print_string();
-            break;
-        case 5:
-            //_read_int();
-            break;
-        case 8:
-            //_read_string();
-            break;
-        case 9:
-            //_sbrk();
-            break;
-        case 10:
-            //_exit();
             break;
         case 11:
             //_print_char();

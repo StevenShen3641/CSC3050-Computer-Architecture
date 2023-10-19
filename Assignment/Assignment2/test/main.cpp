@@ -65,24 +65,24 @@ public:
 };
 
 int main() {
-    int m = 1001;
-    cout << (m >> 32) << endl;
-    int res = m >> 32;
-    if (0x80000000 & m) {
-        for (int i = 31; (31 - 26 < i) && (0 <= i); i--) {
-            res |= (1 << i);
-        }
-    }
-    cout << res << endl;
-
-    unsigned int a = 0x80000000 & m;
-    res = m >> 32;
-    if (a) {
-        for (int i = 0; i < 32 and i < 26; i++) {
-            res |= a >> i;
-        }
-    }
-    cout << res << endl;
+//    int m = 1001;
+//    cout << (m >> 32) << endl;
+//    int res = m >> 32;
+//    if (0x80000000 & m) {
+//        for (int i = 31; (31 - 26 < i) && (0 <= i); i--) {
+//            res |= (1 << i);
+//        }
+//    }
+//    cout << res << endl;
+//
+//    unsigned int a = 0x80000000 & m;
+//    res = m >> 32;
+//    if (a) {
+//        for (int i = 0; i < 32 and i < 26; i++) {
+//            res |= a >> i;
+//        }
+//    }
+//    cout << res << endl;
 //    ifstream inA;
 //    ifstream inB;
 //    // data segment
@@ -148,4 +148,32 @@ int main() {
 //    for(int i:l) {
 //        cout << i << endl;
 //    }
+
+//    stringstream ss;
+//    string line = "123 sdrg ";
+//    int integer;
+//    integer = stoi(line);
+//    ifstream i;
+//    i.open("a.txt", ios::in);
+//    i >> line;
+//    i >> line;
+//    cout << line;
+//    cout << line[99];
+    exit(0);
+    string x = "hello sadf";
+    cout << x << endl;
+    x += "\n\0";
+    cout << x << endl;
+
+//    ss << line;
+//    ss >> integer;
+//    ss.clear();
+//    cout << integer;
+//    ss >> integer;
+//    ss.clear();
+//    cout << integer;
+//    ss << "789\n";
+//    ss >> integer;
+//    ss.flush();
+//    cout << integer;
 }
