@@ -57,6 +57,7 @@ private:
     int staticDataPos;  /// need to be check
     ifstream inF;
     ofstream outF;
+//    bool;
 
     // constants
     // address
@@ -70,15 +71,17 @@ private:
     const string HALF;
     const string BYTE;
 
+    // methods
     // fetch machine code
     string _fetchCode(unsigned int pc);
 
-    // methods
-    void _rType(string rs, string rt, string rd, string sa, string func);
+    void _execute(string inst);
 
-    void _iType(string op, string rs, string rt, string imm);
+    void _rType(unsigned int rs, unsigned int rt, unsigned int rd, unsigned int sa, unsigned int func);
 
-    void _jType(string op, string target);
+    void _iType(unsigned int op, unsigned int rs, unsigned int rt, unsigned int imm);
+
+    void _jType(unsigned int op, unsigned int target);
 
 };
 

@@ -2,7 +2,7 @@
 // Created by 17119 on 2023/10/17.
 //
 
-#include "simulator.h"
+#include "Simulator.h"
 
 
 Simulator::Simulator() : STACK_ADDR(0xA00000), START_ADDR(0x400000), STATIC_ADDR(0x500000), ASCII(".ascii"),
@@ -147,10 +147,13 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
     outF.open(outFile, ios::out);
 
     // start simulating
-    string inst = _fetchCode(this->_regs[$pc]);
+    while (true) {
 
 
+        /// checkpoints
+        string inst = _fetchCode(this->_regs[$pc]);
 
+    }
 
 
 }
@@ -163,15 +166,116 @@ string Simulator::_fetchCode(unsigned int pc) {
     return res;
 }
 
-void Simulator::_rType(string rs, string rt, string rd, string sa, string func) {
+void Simulator::_execute(string inst) {
+    unsigned int op = strToNum(inst.substr(0, 6));
+    if (op == 0b000000) {
+        _rType(strToNum(inst.substr(6, 5)), strToNum(inst.substr(11, 5)),
+               strToNum(inst.substr(16, 5)), strToNum(inst.substr(21, 5)),
+               strToNum(inst.substr(26, 6)));
+    } else if (op == 0b000010 || op == 0b000011) {
+        _jType(strToNum(inst.substr(0, 6)), strToNum(inst.substr(6, 26)));
+    } else {
+        _iType(strToNum(inst.substr(0, 6)), strToNum(inst.substr(6, 5)),
+               strToNum(inst.substr(11, 5)), strToNum(inst.substr(16, 16)));
+    }
+}
+
+void Simulator::_rType(unsigned int rs, unsigned int rt, unsigned int rd, unsigned int sa, unsigned int func) {
+    switch (func) {
+        case 0b100000:  // add
+            this->_regs[rd] = (int) this->_regs[rs] + (int) this->_regs[rt];
+            break;
+        case 0b100001:  // addu
+            this->_regs[rd] = this->_regs[rs] + this->_regs[rt];
+            break;
+        case 0b100100:  // and
+            this->_regs[rd] = this->_regs[rs] & this->_regs[rd];
+            break;
+        case 0b011010:  // div
+            this->_regs[$lo] = (int) this->_regs[rs] / (int) this->_regs[rt];
+            this->_regs[$hi] = (int) this->_regs[rs] % (int) this->_regs[rt];
+            break;
+        case 0b011011:  // divu
+            this->_regs[$lo] = this->_regs[rs] / this->_regs[rt];
+            this->_regs[$hi] = this->_regs[rs] % this->_regs[rt];
+            break;
+        case 0b001001:  // jalr
+            this->_regs[rd] = this->_regs[$pc];
+            this->_regs[$pc] = this->_regs[rs];
+            break;
+        case 0b001000:  // jr
+            this->_regs[$pc] = this->_regs[rs];
+            break;
+        case 0b010000:  // mfhi
+            this->_regs[rd] = this->_regs[$hi];
+            break;
+        case 0b010010:  // mflo
+            this->_regs[rd] = this->_regs[$lo];
+            break;
+        case 0b010001:  // mthi
+            this->_regs[$hi] = this->_regs[rs];
+            break;
+        case 0b010011:  // mtlo
+            this->_regs[$lo] = this->_regs[rs];
+            break;
+        case 0b011000:  // mult
+
+            break;
+        case 0b011001:
+            //_multu();
+            break;
+        case 0b100111:
+            //_nor();
+            break;
+        case 0b100101:
+            //_or();
+            break;
+        case 0b000000:
+            //_sll();
+            break;
+        case 0b000100:
+            //_sllv();
+            break;
+        case 0b101010:
+            //_slt();
+            break;
+        case 0b101011:
+            //_sltu();
+            break;
+        case 0b000011:
+            //_sra();
+            break;
+        case 0b000111:
+            //_srav();
+            break;
+        case 0b000010:
+            //_srl();
+            break;
+        case 0b000110:
+            //_srlv();
+            break;
+        case 0b100010:
+            //_sub();
+            break;
+        case 0b100011:
+            //_subu();
+            break;
+        case 0b001100:
+            //_syscall();
+            break;
+        case 0b100110:
+            //_xor();
+            break;
+        default:
+            break;
+    }
+};
+
+void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsigned int imm) {
 
 };
 
-void Simulator::_iType(string op, string rs, string rt, string imm) {
-
-};
-
-void Simulator::_jType(string op, string target) {
+void Simulator::_jType(unsigned int op, unsigned int target) {
 
 };
 

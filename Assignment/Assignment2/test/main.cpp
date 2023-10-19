@@ -37,7 +37,7 @@ string trim(string s) {
     return s;
 }
 
-string _fetchCode(unsigned int pc=1) {
+string _fetchCode(unsigned int pc = 1) {
     unsigned int _block[10];
     _block[0] = 1;
     _block[1] = 2;
@@ -52,8 +52,20 @@ string _fetchCode(unsigned int pc=1) {
     return res;
 }
 
+class A {
+public:
+    unsigned int *reg;
+    A() {
+        this->reg = new unsigned int[3];
+        this->reg[0] = 2147483668;
+        this->reg[1] = 2147483627;
+        this->reg[2] = (int) this->reg[0] + (int) this->reg[1];
+        cout << this->reg[2] << endl;
+    }
+};
+
 int main() {
-    cout << _fetchCode() << endl;
+    A x;
 //    ifstream inA;
 //    ifstream inB;
 //    // data segment
