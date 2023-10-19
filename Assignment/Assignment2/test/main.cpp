@@ -65,7 +65,24 @@ public:
 };
 
 int main() {
-    A x;
+    int m = 1001;
+    cout << (m >> 32) << endl;
+    int res = m >> 32;
+    if (0x80000000 & m) {
+        for (int i = 31; (31 - 26 < i) && (0 <= i); i--) {
+            res |= (1 << i);
+        }
+    }
+    cout << res << endl;
+
+    unsigned int a = 0x80000000 & m;
+    res = m >> 32;
+    if (a) {
+        for (int i = 0; i < 32 and i < 26; i++) {
+            res |= a >> i;
+        }
+    }
+    cout << res << endl;
 //    ifstream inA;
 //    ifstream inB;
 //    // data segment

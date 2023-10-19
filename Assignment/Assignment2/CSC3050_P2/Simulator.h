@@ -17,6 +17,9 @@
 
 using namespace std;
 
+typedef long long ll;  // 64-bit
+typedef unsigned long long ull;  // 64-bit unsigned
+
 // registers index
 enum REGS {
     $zero,
@@ -75,9 +78,11 @@ private:
     // fetch machine code
     string _fetchCode(unsigned int pc);
 
-    void _execute(string inst);
+    void _execute(const string& inst);
 
     void _rType(unsigned int rs, unsigned int rt, unsigned int rd, unsigned int sa, unsigned int func);
+
+    void _syscall();
 
     void _iType(unsigned int op, unsigned int rs, unsigned int rt, unsigned int imm);
 
@@ -105,7 +110,6 @@ string trim(string s);
 /// \param s input string
 /// \return escaped version
 string escape(string s);
-
 
 
 #endif //SIMULATOR_H

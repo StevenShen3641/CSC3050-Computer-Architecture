@@ -12,12 +12,12 @@ Simulator::Simulator() : STACK_ADDR(0xA00000), START_ADDR(0x400000), STATIC_ADDR
 
     // register initialization
     for (int i = 0; REG_NUM > i; i++) {
-        _regs[i] = 0;
+        this->_regs[i] = 0;
     }
-    _regs[$zero] = 0;
-    _regs[$pc] = START_ADDR;
-    _regs[$fp] = _regs[$sp] = STACK_ADDR;
-    _regs[$gp] = STATIC_ADDR + 0x8000;  // points to the middle of a 64K block in the static data segment
+    this->_regs[$zero] = 0;
+    this->_regs[$pc] = START_ADDR;
+    this->_regs[$fp] = this->_regs[$sp] = STACK_ADDR;
+    this->_regs[$gp] = STATIC_ADDR + 0x8000;  // points to the middle of a 64K block in the static data segment
 
     // memory initialization
     memset(_block, 0, STACK_ADDR - START_ADDR);
@@ -27,8 +27,8 @@ Simulator::Simulator() : STACK_ADDR(0xA00000), START_ADDR(0x400000), STATIC_ADDR
 }
 
 Simulator::~Simulator() {
-    delete[] _regs;
-    delete[] _block;
+    delete[] this->_regs;
+    delete[] this->_block;
 }
 
 void Simulator::init(const string &inAsm, const string &inBin) {
@@ -166,7 +166,7 @@ string Simulator::_fetchCode(unsigned int pc) {
     return res;
 }
 
-void Simulator::_execute(string inst) {
+void Simulator::_execute(const string& inst) {
     unsigned int op = strToNum(inst.substr(0, 6));
     if (op == 0b000000) {
         _rType(strToNum(inst.substr(6, 5)), strToNum(inst.substr(11, 5)),
@@ -219,65 +219,127 @@ void Simulator::_rType(unsigned int rs, unsigned int rt, unsigned int rd, unsign
             this->_regs[$lo] = this->_regs[rs];
             break;
         case 0b011000:  // mult
-
+            ll resMult;
+            resMult = 1LL * (int) this->_regs[rs] * (int) this->_regs[rt];
+            this->_regs[$lo] = resMult & 0xffffffff;
+            this->_regs[$hi] = (resMult >> 32) & 0xffffffff;
             break;
-        case 0b011001:
-            //_multu();
+        case 0b011001:  // multu
+            ull resMultu;
+            resMultu = 1ULL * this->_regs[rs] * this->_regs[rt];
+            this->_regs[$lo] = resMultu & 0xffffffff;
+            this->_regs[$hi] = (resMultu >> 32) & 0xffffffff;
             break;
-        case 0b100111:
-            //_nor();
+        case 0b100111:  // nor
+            this->_regs[rd] = ~(this->_regs[rs] | this->_regs[rt]);
             break;
-        case 0b100101:
-            //_or();
+        case 0b100101:  // or
+            this->_regs[rd] = this->_regs[rs] | this->_regs[rt];
             break;
-        case 0b000000:
-            //_sll();
+        case 0b000000:  // sll
+            this->_regs[rd] = this->_regs[rt] << sa;
             break;
-        case 0b000100:
-            //_sllv();
+        case 0b000100:  // sllv
+            this->_regs[rd] = this->_regs[rt] << this->_regs[rs];
             break;
-        case 0b101010:
-            //_slt();
+        case 0b101010:  // slt
+            this->_regs[rd] = (int) this->_regs[rs] < (int) this->_regs[rt] ? 1 : 0;
             break;
-        case 0b101011:
-            //_sltu();
+        case 0b101011:  // sltu
+            this->_regs[rd] = this->_regs[rs] < this->_regs[rt] ? 1 : 0;
             break;
-        case 0b000011:
-            //_sra();
+        case 0b000011:  // sra
+            this->_regs[rd] = this->_regs[rt] >> sa;
+            if (0x80000000 & this->_regs[rt]) {
+                for (int i = 31; (31 - sa < i) && (0 <= i); i--) {
+                    this->_regs[rd] |= (1 << i);
+                }
+            }
             break;
-        case 0b000111:
-            //_srav();
+        case 0b000111:  // srav
+            this->_regs[rd] = this->_regs[rt] >> this->_regs[rs];
+            if (0x80000000 & this->_regs[rt]) {
+                for (int i = 31; (31 - this->_regs[rs] < i) && (0 <= i); i--) {
+                    this->_regs[rd] |= (1 << i);
+                }
+            }
             break;
-        case 0b000010:
-            //_srl();
+        case 0b000010:  // srl
+            this->_regs[rd] = this->_regs[rt] >> sa;
             break;
-        case 0b000110:
-            //_srlv();
+        case 0b000110:  // srlv
+            this->_regs[rd] = this->_regs[rt] >> this->_regs[rs];
             break;
-        case 0b100010:
-            //_sub();
+        case 0b100010:  // sub
+            this->_regs[rd] = (int) this->_regs[rs] - (int) this->_regs[rt];
             break;
-        case 0b100011:
-            //_subu();
+        case 0b100011:  // subu
+            this->_regs[rd] = this->_regs[rs] - this->_regs[rt];
             break;
         case 0b001100:
-            //_syscall();
+            _syscall();
             break;
-        case 0b100110:
-            //_xor();
+        case 0b100110:  // xor
+            this->_regs[rd] = this->_regs[rs] ^ this->_regs[rt];
+        default:
+            break;
+    }
+}
+
+void Simulator::_syscall() {
+    switch (this->_regs[$v0]) {
+        case 1:  // print_int
+            outF << (int) this->_regs[$a0];
+
+            break;
+        case 4:
+            //_print_string();
+            break;
+        case 5:
+            //_read_int();
+            break;
+        case 8:
+            //_read_string();
+            break;
+        case 9:
+            //_sbrk();
+            break;
+        case 10:
+            //_exit();
+            break;
+        case 11:
+            //_print_char();
+            break;
+        case 12:
+            //_read_char();
+            break;
+        case 13:
+            //_open();
+            break;
+        case 14:
+            //_read();
+            break;
+        case 15:
+            //_write();
+            break;
+        case 16:
+            //_close();
+            break;
+        case 17:
+            //_exit2();
             break;
         default:
             break;
     }
-};
+}
 
 void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsigned int imm) {
 
-};
+}
 
 void Simulator::_jType(unsigned int op, unsigned int target) {
 
-};
+}
 
 unsigned int strToNum(const string &s) {
     unsigned int res = 0;
