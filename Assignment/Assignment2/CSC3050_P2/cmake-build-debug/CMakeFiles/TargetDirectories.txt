@@ -1,3 +1,0 @@
-E:/git/CSC3050/Assignment/Assignment2/CSC3050_P2/cmake-build-debug/CMakeFiles/CSC3050_P2.dir
-E:/git/CSC3050/Assignment/Assignment2/CSC3050_P2/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/git/CSC3050/Assignment/Assignment2/CSC3050_P2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

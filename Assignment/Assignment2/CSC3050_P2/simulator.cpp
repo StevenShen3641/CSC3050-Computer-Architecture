@@ -146,6 +146,10 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
     }
     outF.open(outFile, ios::out);
 
+    // start simulating
+    string inst = _fetchCode(this->_regs[$pc]);
+
+
 
 
 
