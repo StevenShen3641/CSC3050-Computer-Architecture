@@ -20,8 +20,7 @@ public:
     Checkpoints();
     ~Checkpoints();
     void push(int i);
-    bool exist(int i);
-    static void dump(int instCount, unsigned int *_regs, unsigned char *_block, int size);
+    void dump(int instCount, unsigned int *_regs, unsigned char *_block, int size);
 };
 
 

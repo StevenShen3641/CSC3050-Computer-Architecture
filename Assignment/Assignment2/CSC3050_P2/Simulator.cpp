@@ -167,9 +167,7 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
             break;
         }
 
-        if (cp.exist(instCount)) {
-            cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
-        }
+        cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
 
         /// checkpoints
         string inst = _fetchCode(this->_regs[$pc]);
