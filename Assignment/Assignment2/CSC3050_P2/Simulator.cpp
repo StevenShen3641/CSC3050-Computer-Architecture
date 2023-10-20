@@ -333,9 +333,10 @@ void Simulator::_syscall() {
             int integer;
             integer = stoi(line);
             this->_regs[$v0] = integer;
+            getline(inF, line);
             break;
         case 8:  // read_string
-            inF >> line;
+            getline(inF, line);
             for (int i = 0; i < this->_regs[$a1] && i < line.size(); i++) {
                 this->_block[this->_regs[$a0] - START_ADDR + i] = line[i];
             }  /// need to be check
@@ -354,6 +355,7 @@ void Simulator::_syscall() {
             char c;
             inF >> c;
             this->_regs[$v0] = (unsigned char) c;
+            getline(inF, line);
             break;
         case 13:  // open
             const char *name;
@@ -569,11 +571,11 @@ string trim(string s) {
     }
 
     // remove blank part
-    if (s.find_first_not_of(" \t\n") == string::npos) {
+    if (s.find_first_not_of(" \t\n\r") == string::npos) {
         return "";
     }
-    s = s.substr(s.find_first_not_of(" \t\n"));
-    s = s.substr(0, s.find_last_not_of(" \t\n") + 1);
+    s = s.substr(s.find_first_not_of(" \t\n\r"));
+    s = s.substr(0, s.find_last_not_of(" \t\n\r") + 1);
 
     return s;
 }
