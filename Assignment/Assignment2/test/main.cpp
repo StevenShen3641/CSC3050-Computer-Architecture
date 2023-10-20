@@ -159,11 +159,37 @@ int main() {
 //    i >> line;
 //    cout << line;
 //    cout << line[99];
-    exit(0);
-    string x = "hello sadf";
-    cout << x << endl;
-    x += "\n\0";
-    cout << x << endl;
+//    exit(0);
+//    ifstream i;
+//    i.open("a.txt", ios::in);
+//    char y;
+//    i >> y;
+//    cout << y << endl;
+//    i >> y;
+//    cout << y << endl;
+
+//    unsigned char x = -111;
+//    unsigned int z = x;
+//    cout << z << endl;
+//    z = (unsigned int) x;
+//    unsigned char m = 0b11111111;
+//    unsigned char n = 0b00110000;
+//    unsigned int l = n | (m << 8);
+//    if (m & 0x80) {
+//        l  |= 0xffff << 16;
+//    }
+//
+//    cout << l << endl;
+//
+//    l =  (m & 0x80) ? (((m << 8) | n) | (0xffff << 16)) : ((unsigned int)((m << 8) | n));
+//    cout << l;
+    char a[4] {'1', '2', '3', '4'};
+    ofstream d;
+    d.open("1.bin", ios::binary);
+    d.write((char *)a, 10);
+
+
+
 
 //    ss << line;
 //    ss >> integer;

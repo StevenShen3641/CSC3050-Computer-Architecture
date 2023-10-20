@@ -3,4 +3,4 @@ project(CSC3050_P2)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(CSC3050_P2 main.cpp Simulator.cpp Simulator.h)
+add_executable(CSC3050_P2 main.cpp Simulator.cpp Simulator.h Checkpoints.cpp Checkpoints.h)

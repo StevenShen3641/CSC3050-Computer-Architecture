@@ -12,6 +12,7 @@
 #include <cstring>
 #include <sstream>
 #include <bitset>
+#include "Checkpoints.h"
 
 #define REG_NUM  35
 
@@ -46,7 +47,7 @@ public:
     /// initialization
     /// \param inAsm input asm file
     /// \param inBin input binary code file
-    void init(const string &inAsm, const string &inBin);
+    void init(const string &inAsm, const string &inBin, const string &checkPts);
 
     /// simulation part
     /// \param inFile input file
@@ -60,6 +61,7 @@ private:
     int staticDataPos;  /// need to be check
     ifstream inF;
     ofstream outF;
+    Checkpoints cp;
 //    bool;
 
     // constants

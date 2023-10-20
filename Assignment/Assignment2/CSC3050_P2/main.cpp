@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     string outFile = argv[5];
 
     Simulator simulator;
-    simulator.init(inAsm, inBin);
+    simulator.init(inAsm, inBin, checkPts);
     simulator.simulate(inFile, outFile);
 
 }
