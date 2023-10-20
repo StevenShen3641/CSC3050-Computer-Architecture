@@ -1,7 +1,7 @@
 //
 // Created by 17119 on 2023/10/17.
 //
-
+#include <fcntl.h>
 #include "Simulator.h"
 
 
@@ -27,6 +27,10 @@ Simulator::Simulator() : STACK_ADDR(0xA00000), START_ADDR(0x400000), STATIC_ADDR
 
     // current block position
     staticDataPos = 0;
+
+    // return code
+    re = false;
+    reCode = 0;
 }
 
 Simulator::~Simulator() {
@@ -163,21 +167,26 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
     int instCount = 0;
     // start simulating
     while (true) {
-        if (!(this->_regs[$pc] >= START_ADDR && this->_regs[$pc] < STATIC_ADDR)) {
+
+        if ((!(this->_regs[$pc] >= START_ADDR && this->_regs[$pc] < STATIC_ADDR)) || re) {
             break;
         }
 
         cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
 
-        /// checkpoints
         string inst = _fetchCode(this->_regs[$pc]);
         this->_regs[$pc] += 4;
         _execute(inst);
+        // cout << this->_regs[$a0] << endl;  ///
+        // cout << this->_regs[$t7] << endl;  ///
+        // cout << "pc" << this->_regs[$pc] << endl;
         instCount++;
 
     }
+    cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
     inF.close();
     outF.close();
+    exit(reCode);
 }
 
 string Simulator::_fetchCode(unsigned int pc) {
@@ -190,14 +199,16 @@ string Simulator::_fetchCode(unsigned int pc) {
 
 void Simulator::_execute(const string &inst) {
     unsigned int op = strToNum(inst.substr(0, 6));
+    // cout << "the opcode is " << op << endl;
+    // cout << "the code is" << inst << endl;
     if (op == 0b000000) {
         _rType(strToNum(inst.substr(6, 5)), strToNum(inst.substr(11, 5)),
                strToNum(inst.substr(16, 5)), strToNum(inst.substr(21, 5)),
                strToNum(inst.substr(26, 6)));
     } else if (op == 0b000010 || op == 0b000011) {
-        _jType(strToNum(inst.substr(0, 6)), strToNum(inst.substr(6, 26)));
+        _jType(op, strToNum(inst.substr(6, 26)));
     } else {
-        _iType(strToNum(inst.substr(0, 6)), strToNum(inst.substr(6, 5)),
+        _iType(op, strToNum(inst.substr(6, 5)),
                strToNum(inst.substr(11, 5)), strToNum(inst.substr(16, 16)));
     }
 }
@@ -334,31 +345,37 @@ void Simulator::_syscall() {
             staticDataPos += (int) this->_regs[$a0];
             break;
         case 10:  // exit
-
+            re = true;
             break;
         case 11:  // print_char
             outF << (char) this->_regs[$a0] << flush;
             break;
         case 12:  // read char
             char c;
-            inF >> line;
-            c = line[0];
-            this->_regs[$v0] = c;
+            inF >> c;
+            this->_regs[$v0] = (unsigned char) c;
             break;
-        case 13:
-            //_open();
+        case 13:  // open
+            const char *name;
+            name = (const char *) this->_block + this->_regs[$a0] - START_ADDR;
+            this->_regs[$a0] = open(name, (int) this->_regs[$a1], this->_regs[$a2]);
             break;
-        case 14:
-            //_read();
+        case 14:  // read
+            unsigned char *dstBuff1;
+            dstBuff1 = this->_block + this->_regs[$a1] - START_ADDR;
+            this->_regs[$a0] = read((int) this->_regs[$a0], dstBuff1, this->_regs[$a2]);
             break;
-        case 15:
-            //_write();
+        case 15:  // write
+            unsigned char *dstBuff2;
+            dstBuff2 = this->_block + this->_regs[$a1] - START_ADDR;
+            this->_regs[$a0] = write((int) this->_regs[$a0], dstBuff2, this->_regs[$a2]);
             break;
-        case 16:
-            //_close();
+        case 16:  // close
+            close((int) this->_regs[$a0]);
             break;
-        case 17:
-            //_exit2();
+        case 17:  // exit2
+            re = true;
+            reCode = (int) this->_regs[$a0];
             break;
         default:
             break;
@@ -370,7 +387,6 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
     unsigned char bit2;
     unsigned char bit3;
     unsigned char bit4;
-
     switch (op) {
         case 0b001000:  // addi
             this->_regs[rt] = (short) imm + (int) this->_regs[rs];
@@ -408,6 +424,7 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
             }
             break;
         case 0b000101:  // bne
+            // cout << this->_regs[rs] << " " << this->_regs[rt] << endl;
             if (this->_regs[rs] != this->_regs[rt]) {
                 this->_regs[$pc] += 4 * (short) imm;  // already add 4
             }
@@ -424,13 +441,13 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
             bit1 = this->_block[this->_regs[rs] - START_ADDR + (short) imm];
             this->_regs[rt] = (unsigned int) bit1;
             break;
-        case 0b100001:  // lh
+        case 0b100001:  // lh little endian
             bit1 = this->_block[this->_regs[rs] - START_ADDR + (short) imm];
             bit2 = this->_block[this->_regs[rs] - START_ADDR + (short) imm + 1];
             this->_regs[rt] = (bit2 & 0x80) ? ((unsigned int) ((bit2 << 8) | bit1) | (0xffff << 16)) : (unsigned int) (
                     (bit2 << 8) | bit1);
             break;
-        case 0b100101:  // lhu
+        case 0b100101:  // lhu little endian
             bit1 = this->_block[this->_regs[rs] - START_ADDR + (short) imm];
             bit2 = this->_block[this->_regs[rs] - START_ADDR + (short) imm + 1];
             this->_regs[rt] = (unsigned int) ((bit2 << 8) | bit1);
@@ -438,7 +455,7 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
         case 0b001111:  // lui
             this->_regs[rt] = imm << 16;
             break;
-        case 0b100011:  // lw
+        case 0b100011:  // lw little endian
             bit1 = this->_block[this->_regs[rs] - START_ADDR + (short) imm];
             bit2 = this->_block[this->_regs[rs] - START_ADDR + (short) imm + 1];
             bit3 = this->_block[this->_regs[rs] - START_ADDR + (short) imm + 2];
@@ -457,30 +474,56 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
         case 0b001011:  // sltiu
             this->_regs[rt] = (this->_regs[rs] < imm) ? 1 : 0;
             break;
-        case 0b101001:  // sh
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm] = this->_regs[rt] & 0xff;
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm + 1] = (this->_regs[rt] >> 8) & 0xff;
+        case 0b101001:  // sh little endian
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm] = this->_regs[rt] & 0xff;
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm + 1] = (this->_regs[rt] >> 8) & 0xff;
             break;
-        case 0b101011:  // sw
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm] = this->_regs[rt] & 0xff;
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm + 1] = (this->_regs[rt] >> 8) & 0xff;
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm + 2] = (this->_regs[rt] >> 16) & 0xff;
-            this->_block[this->_regs[rs] - START_ADDR + (short)imm + 3] = (this->_regs[rt] >> 24) & 0xff;
+        case 0b101011:  // sw little endian
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm] = this->_regs[rt] & 0xff;
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm + 1] = (this->_regs[rt] >> 8) & 0xff;
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm + 2] = (this->_regs[rt] >> 16) & 0xff;
+            this->_block[this->_regs[rs] - START_ADDR + (short) imm + 3] = (this->_regs[rt] >> 24) & 0xff;
             break;
         case 0b001110:  // xori
             this->_regs[rt] = this->_regs[rs] ^ imm;
             break;
-        case 0b100010:
-            //_lwl();
+        case 0b100010:  // lwl little endian
+            unsigned int lwlInd;
+            unsigned int lB;  // lower bound
+            lwlInd = this->_regs[rs] + (short) imm;
+            lB = lwlInd - lwlInd % 4;
+            for (unsigned int i = lwlInd; i >= lB; i--) {
+                this->_regs[rt] &= ~(0xff << ((3 - lwlInd + i) * 8));
+                this->_regs[rt] |= (this->_block[i - START_ADDR] << ((3 - lwlInd + i) * 8));
+            }
             break;
-        case 0b100110:
-            //_lwr();
+        case 0b100110:  // lwr little endian
+            unsigned int lwrInd;
+            unsigned int uB;  // upper bound
+            lwrInd = this->_regs[rs] + (short) imm;
+            uB = (lwrInd + 4) - (lwrInd + 4) % 4;
+            for (unsigned int i = lwrInd; i < uB; i++) {
+                this->_regs[rt] &= ~(0xff << ((i - lwrInd) * 8));
+                this->_regs[rt] |= (this->_block[i - START_ADDR] << ((i - lwrInd) * 8));
+            }
             break;
-        case 0b101010:
-            //_swl();
+        case 0b101010:  // swl little endian
+            unsigned int swlInd;
+            unsigned int sLB;  // store lower bound
+            swlInd = this->_regs[rs] + (short) imm;
+            sLB = swlInd - swlInd % 4;
+            for (unsigned int i = swlInd; i >= sLB; i--) {
+                this->_block[i - START_ADDR] = (this->_regs[rt] >> ((3 - swlInd + i) * 8)) & 0xff;
+            }
             break;
-        case 0b101110:
-           // _swr();
+        case 0b101110:  // swr little endian
+            unsigned int swrInd;
+            unsigned int sUB;  // store upper bound
+            swrInd = this->_regs[rs] + (short) imm;
+            sUB = (swrInd + 4) - (swrInd + 4) % 4;
+            for (unsigned int i = swrInd; i < sUB; i++) {
+                this->_block[i - START_ADDR] = (this->_regs[rt] >> ((i - swrInd) * 8)) & 0xff;
+            }
             break;
         default:
             break;
@@ -491,11 +534,11 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
 void Simulator::_jType(unsigned int op, unsigned int target) {
     unsigned int addr;
     switch (op) {
-        case 0x000010:  // j
+        case 0b000010:  // j
             addr = (this->_regs[$pc] & 0xf0000000) | (target << 2);
             this->_regs[$pc] = addr;
             break;
-        case 0x000011:  // jal
+        case 0b000011:  // jal
             this->_regs[$ra] = this->_regs[$pc];
             addr = (this->_regs[$pc] & 0xf0000000) | (target << 2);
             this->_regs[$pc] = addr;

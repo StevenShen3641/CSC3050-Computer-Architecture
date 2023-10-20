@@ -12,6 +12,9 @@
 #include <cstring>
 #include <sstream>
 #include <bitset>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "Checkpoints.h"
 
 #define REG_NUM  35
@@ -58,11 +61,12 @@ private:
     // variables
     unsigned int *_regs;
     unsigned char *_block;
-    int staticDataPos;  /// need to be check
+    int staticDataPos;
     ifstream inF;
     ofstream outF;
     Checkpoints cp;
-//    bool;
+    bool re;
+    int reCode;
 
     // constants
     // address

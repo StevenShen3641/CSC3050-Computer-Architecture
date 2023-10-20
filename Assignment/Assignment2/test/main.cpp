@@ -183,10 +183,24 @@ int main() {
 //
 //    l =  (m & 0x80) ? (((m << 8) | n) | (0xffff << 16)) : ((unsigned int)((m << 8) | n));
 //    cout << l;
-    char a[4] {'1', '2', '3', '4'};
-    ofstream d;
-    d.open("1.bin", ios::binary);
-    d.write((char *)a, 10);
+//    char a[4] {'1', '2', '3', '4'};
+//    ofstream d;
+//    d.open("1.bin", ios::binary);
+//    d.write((char *)a, 10);
+//    for (int i = 1; i < 3; i ++) {
+//        cout << i << endl;
+//    }
+    unsigned char k[] {'1', '2', '3', '4', '5', '\0', '6', '7'};
+    cout << k + 1 << endl;
+    const char *name;
+    name = (const char *) k + 1;
+    cout << name << endl;
+
+    char m;
+    int i = 3;
+    cout << (i << 1) << endl;
+    cout << i << endl;
+
 
 
 

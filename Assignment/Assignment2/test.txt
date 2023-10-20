@@ -1,0 +1,1 @@
+./simulator fib.asm fib.txt fib_checkpts.txt fib.in fib.out
