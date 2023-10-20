@@ -471,16 +471,16 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
             this->_regs[rt] = this->_regs[rs] ^ imm;
             break;
         case 0b100010:
-            _lwl();
+            //_lwl();
             break;
         case 0b100110:
-            _lwr();
+            //_lwr();
             break;
         case 0b101010:
-            _swl();
+            //_swl();
             break;
         case 0b101110:
-            _swr();
+           // _swr();
             break;
         default:
             break;
