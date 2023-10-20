@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 6) {
-        cout << "Please input the six file names in order!" << endl;
+        cout << "Please input the five file names in order!" << endl;
         return 0;
     }
     string inAsm = argv[1];
@@ -15,5 +15,4 @@ int main(int argc, char *argv[]) {
     Simulator simulator;
     simulator.init(inAsm, inBin, checkPts);
     simulator.simulate(inFile, outFile);
-
 }
