@@ -1,1 +1,2 @@
 ./simulator fib.asm fib.txt fib_checkpts.txt fib.in fib.out
+./simulator many.asm many.txt many_checkpts.txt many.in many.out

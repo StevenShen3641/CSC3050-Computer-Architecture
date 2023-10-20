@@ -10,4 +10,4 @@ Simulator.o: Simulator.cpp Simulator.h
 
 .PHONY: clean
 clean:
-	del *.o simulator.exe
+	del *.o simulator.exe *.bin
