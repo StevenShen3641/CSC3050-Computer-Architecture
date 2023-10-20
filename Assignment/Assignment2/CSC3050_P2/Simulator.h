@@ -5,6 +5,7 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <string>
