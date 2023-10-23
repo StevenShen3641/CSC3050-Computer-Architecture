@@ -66,8 +66,7 @@ private:
     ifstream inF;
     ofstream outF;
     Checkpoints cp;
-    bool re;
-    int reCode;
+    int instCount;
 
     // constants
     // address

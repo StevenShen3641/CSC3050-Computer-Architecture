@@ -28,9 +28,8 @@ Simulator::Simulator() : STACK_ADDR(0xA00000), START_ADDR(0x400000), STATIC_ADDR
     // current block position
     staticDataPos = 0;
 
-    // return code
-    re = false;
-    reCode = 0;
+    // instruction number
+    instCount = 0;
 }
 
 Simulator::~Simulator() {
@@ -164,11 +163,10 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
     }
     outF.open(outFile, ios::out);
 
-    int instCount = 0;
     // start simulating
     while (true) {
 
-        if ((!(this->_regs[$pc] >= START_ADDR && this->_regs[$pc] < STATIC_ADDR)) || re) {
+        if ((!(this->_regs[$pc] >= START_ADDR && this->_regs[$pc] < STATIC_ADDR))) {
             break;
         }
 
@@ -176,17 +174,11 @@ void Simulator::simulate(const string &inFile, const string &outFile) {
 
         string inst = _fetchCode(this->_regs[$pc]);
         this->_regs[$pc] += 4;
-        _execute(inst);
-        // cout << this->_regs[$a0] << endl;  ///
-        // cout << this->_regs[$t7] << endl;  ///
-        // cout << "pc" << this->_regs[$pc] << endl;
         instCount++;
-
+        _execute(inst);
     }
-    cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
     inF.close();
     outF.close();
-    exit(reCode);
 }
 
 string Simulator::_fetchCode(unsigned int pc) {
@@ -199,8 +191,6 @@ string Simulator::_fetchCode(unsigned int pc) {
 
 void Simulator::_execute(const string &inst) {
     unsigned int op = strToNum(inst.substr(0, 6));
-    // cout << "the opcode is " << op << endl;
-    // cout << "the code is" << inst << endl;
     if (op == 0b000000) {
         _rType(strToNum(inst.substr(6, 5)), strToNum(inst.substr(11, 5)),
                strToNum(inst.substr(16, 5)), strToNum(inst.substr(21, 5)),
@@ -323,7 +313,7 @@ void Simulator::_syscall() {
     string line;
     switch (this->_regs[$v0]) {
         case 1:  // print_int
-            outF << (int) this->_regs[$a0] << flush;   /// need to check flush
+            outF << (int) this->_regs[$a0] << flush;
             break;
         case 4:  // print_string
             outF << this->_block + this->_regs[$a0] - START_ADDR << flush;
@@ -339,15 +329,15 @@ void Simulator::_syscall() {
             getline(inF, line);
             for (int i = 0; i < this->_regs[$a1] && i < line.size(); i++) {
                 this->_block[this->_regs[$a0] - START_ADDR + i] = line[i];
-            }  /// need to be check
+            }
             break;
         case 9:  // sbrk
-            this->_regs[$v0] = STATIC_ADDR + staticDataPos;  /// need to be check
+            this->_regs[$v0] = STATIC_ADDR + staticDataPos;
             staticDataPos += (int) this->_regs[$a0];
             break;
         case 10:  // exit
-            re = true;
-            break;
+            cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
+            exit(0);
         case 11:  // print_char
             outF << (char) this->_regs[$a0] << flush;
             break;
@@ -376,9 +366,8 @@ void Simulator::_syscall() {
             close((int) this->_regs[$a0]);
             break;
         case 17:  // exit2
-            re = true;
-            reCode = (int) this->_regs[$a0];
-            break;
+            cp.dump(instCount, this->_regs, this->_block, STACK_ADDR - START_ADDR);
+            exit((int) this->_regs[$a0]);
         default:
             break;
     }
@@ -426,7 +415,6 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
             }
             break;
         case 0b000101:  // bne
-            // cout << this->_regs[rs] << " " << this->_regs[rt] << endl;
             if (this->_regs[rs] != this->_regs[rt]) {
                 this->_regs[$pc] += 4 * (short) imm;  // already add 4
             }
@@ -529,7 +517,6 @@ void Simulator::_iType(unsigned int op, unsigned int rs, unsigned int rt, unsign
             break;
         default:
             break;
-
     }
 }
 
