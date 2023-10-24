@@ -192,12 +192,15 @@ string Simulator::_fetchCode(unsigned int pc) {
 void Simulator::_execute(const string &inst) {
     unsigned int op = strToNum(inst.substr(0, 6));
     if (op == 0b000000) {
+        // rs rt rd shamt function
         _rType(strToNum(inst.substr(6, 5)), strToNum(inst.substr(11, 5)),
                strToNum(inst.substr(16, 5)), strToNum(inst.substr(21, 5)),
                strToNum(inst.substr(26, 6)));
     } else if (op == 0b000010 || op == 0b000011) {
+        // opcode target
         _jType(op, strToNum(inst.substr(6, 26)));
     } else {
+        // opcode rs rt immediate
         _iType(op, strToNum(inst.substr(6, 5)),
                strToNum(inst.substr(11, 5)), strToNum(inst.substr(16, 16)));
     }
@@ -299,7 +302,7 @@ void Simulator::_rType(unsigned int rs, unsigned int rt, unsigned int rd, unsign
         case 0b100011:  // subu
             this->_regs[rd] = this->_regs[rs] - this->_regs[rt];
             break;
-        case 0b001100:
+        case 0b001100:  // syscall
             _syscall();
             break;
         case 0b100110:  // xor
