@@ -63,7 +63,6 @@ module alu(
         // R-type
         if (opcode == 6'b0) begin
             case (funct)
-                // addu is implemented follows as an example, you should implement others by yourself.
                 6'h21: // addu
                     result = rs_reg + rt_reg;
             endcase
