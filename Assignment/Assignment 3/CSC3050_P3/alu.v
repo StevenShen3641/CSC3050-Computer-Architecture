@@ -5,36 +5,33 @@
 // regA: 00000; regB: 00001
 
 module alu(
-    input[31:0] instruction, 
-    input[31:0] regA, 
-    input[31:0] regB, 
-    output reg[31:0] result, 
-    output reg[2:0] flags
+    input [31:0] instruction,
+    input [31:0] regA,
+    input [31:0] regB,
+    output reg [31:0] result,
+    output reg [2:0] flags
 );
 
-    wire[5:0] opcode;
-    reg[5:0] funct;
-    reg[4:0] rs, rt, rd, shamt;
-    reg[15:0] immediate;
-    reg[31:0] rs_reg, rt_reg;
-
-    reg[31:0] temp_reg;
-    integer i; // sra, srav
+    wire [5:0] opcode;
+    reg [5:0] funct;
+    reg [4:0] rs, rt, rd, shamt;
+    reg [15:0] immediate;
+    reg [31:0] rs_reg, rt_reg;
 
     assign opcode = instruction[31:26];
 
     // parse instruction
     always @(*) begin
         // R-type
-        if (opcode == 6'b0 ) begin 
+        if (opcode == 6'b0) begin
             rs = instruction[25:21];
             rt = instruction[20:16];
             rd = instruction[15:11];
             shamt = instruction[10:6];
             funct = instruction[5:0];
         end
-        // I-type. We only consider some R-type and I-type instructions in this simple ALU
-        else begin 
+        // I-type
+        else begin
             rs = instruction[25:21];
             rt = instruction[20:16];
             immediate = instruction[15:0];
@@ -42,39 +39,99 @@ module alu(
     end
 
     // fetch register values
+    // we only have 00000 and 00001
     always @(*) begin
-        if (rs == 5'b0) begin
+        if (rs == 5'b0)
             rs_reg = regA;
-        end
-        else begin
+        else
             rs_reg = regB;
-        end
-        if (rt == 5'b0) begin
+        if (rt == 5'b0)
             rt_reg = regA;
-        end
-        else begin
+        else
             rt_reg = regB;
-        end
     end
 
     // exicute different instructions
     always @(*) begin
-        flags = 3'b0;
-        // R-type
-        if (opcode == 6'b0) begin
-            case (funct)
-                6'h21: // addu
-                    result = rs_reg + rt_reg;
-            endcase
-        end
+        flags = 3'b0;  // default the flag
+        case (opcode)
+            // R-type
+            6'h00: begin
+                case (funct)
+                    6'h20: begin  // add
+                        result = $signed(rs_reg)+$signed(rt_reg);
+                        if ({result[31], rs_reg[31], rt_reg[31]} == {3'b011} || {result[31], rs_reg[31], rt_reg[31]} == {3'b100})
+                            flags[0] = 1'b1;
+                    end
+                    6'h21:  // addu
+                        result = rs_reg+rt_reg;
+                    6'h24:  // and
+                        result = rs_reg & rt_reg;
+                    6'h27:  // nor
+                        result = ~(rs_reg | rt_reg);
+                    6'h25:  // or
+                        result = rs_reg | rt_reg;
+                    6'h00:  // sll
+                        result = rt_reg << shamt;
+                    6'h04:  // sllv
+                        result = rt_reg << rs_reg;
+                    6'h2A: begin  // slt
+                       // result =
+                    end
+                    6'h2B: begin  // sltu
+                       // result =
+                    end
+                    6'h03:  // sra
+                        result = $signed(rt_reg) >>> shamt;
+                    6'h07:  // srav
+                        result = $signed(rt_reg) >>> rs_reg;
+                    6'h02:  // srl
+                        result = rt_reg >> shamt;
+                    6'h06:  // srlv
+                        result = rt_reg >> rs_reg;
+                    6'h22: begin  // sub
+                        result = $signed(rs_reg) - $signed(rt_reg);
+                        if ({result[31], rs_reg[31], rt_reg[31]} == {3'b101} || {result[31], rs_reg[31], rt_reg[31]} == {3'b010})
+                            flags[0] = 1;
+                    end
+                    6'h23:  // subu
+                        result = rs_reg - rt_reg;
+                    6'h26:  // xor
+                        result = rs_reg ^ rt_reg;
+                endcase
+            end
 
-        // I-type
-        else begin
-            case (opcode)
-                // addiu is implemented follows as an example, you should implement others by yourself.
-                6'h09: // addiu
-                    result = rs_reg + {{(16){immediate[15]}}, immediate};
-            endcase
-        end
+            // I-type
+            // addiu is implemented follows as an example, you should implement others by yourself.
+            6'h08: begin  // addi
+                result = rs_reg+{{(16){immediate[15]}}, immediate};
+                if ({result[31], immediate[15], rs_reg[31]}=={3'b100} || {result[31], immediate[15], rs_reg[31]}=={3'b011})
+                    flags[0] = 1;
+            end
+            6'h09:  // addiu
+                result = rs_reg+{{(16){immediate[15]}}, immediate};
+            6'h0C:  // andi
+                result = rs_reg & {16'b0, immediate};
+            6'h04: begin  // beq
+               //
+            end
+            6'h05: begin  // bne
+                //
+            end
+            6'h23:  // lw
+                result = rs_reg+{{(16){immediate[15]}}, immediate};
+            6'h0D:  // ori
+                result = rs_reg | {16'b0, immediate};
+            6'h0A: begin  // slti
+                //
+            end
+            6'h0B: begin  // sltiu
+                //
+            end
+            6'h2B:  // sw
+                result = rs_reg+{{(16){immediate[15]}}, immediate};
+            6'h0E:  // xori
+                result = rs_reg ^ {16'b0, immediate};
+        endcase
     end
 endmodule

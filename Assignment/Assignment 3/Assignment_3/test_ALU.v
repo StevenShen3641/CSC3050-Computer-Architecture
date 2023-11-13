@@ -132,9 +132,9 @@ wire [2:0] flags;
 	regB = 32'h00000000;
 	#100
 	$display("\n                                     addi test(overflow)");
-	instruction = 32'h20200001;  // testing for addi
-	regA = 32'h7FFFFFFF;
-	regB = 32'h00000000;
+	instruction = 32'h20200101;  // testing for addi
+	regA = 32'hFFFFFFFF;
+	regB = 32'hFFFFFFFF;
 	#100
 	$display("\n                                        andi test");
 	instruction = 32'h30010001;  // testing for andi
