@@ -62,7 +62,7 @@ module alu(
             6'h00: begin
                 case (funct)
                     6'h20: begin  // add
-                        result = $signed(rs_reg)+$signed(rt_reg);
+                        result = rs_reg+rt_reg;
                         if ({result[31], rs_reg[31], rt_reg[31]} == {3'b011} || {result[31], rs_reg[31], rt_reg[31]} == {3'b100})
                             flags[0] = 1'b1;
                     end
@@ -107,7 +107,7 @@ module alu(
                     6'h06:  // srlv
                         result = rt_reg >> rs_reg;
                     6'h22: begin  // sub
-                        result = $signed(rs_reg)-$signed(rt_reg);
+                        result = rs_reg-rt_reg;
                         if ({result[31], rs_reg[31], rt_reg[31]} == {3'b101} || {result[31], rs_reg[31], rt_reg[31]} == {3'b010})
                             flags[0] = 1;
                     end
@@ -120,12 +120,12 @@ module alu(
 
             // I-type
             6'h08: begin  // addi
-                result = rs_reg+{{(16){immediate[15]}}, immediate};
+                result = rs_reg+$signed(immediate);
                 if ({result[31], immediate[15], rs_reg[31]} == {3'b100} || {result[31], immediate[15], rs_reg[31]} == {3'b011})
                     flags[0] = 1;
             end
             6'h09:  // addiu
-                result = rs_reg+{{(16){immediate[15]}}, immediate};
+                result = rs_reg+$signed(immediate);
             6'h0C:  // andi
                 result = rs_reg & {16'b0, immediate};
             6'h04: begin  // beq
@@ -143,11 +143,11 @@ module alu(
                     flags[2] = 1'b0;
             end
             6'h23:  // lw
-                result = rs_reg+{{(16){immediate[15]}}, immediate};
+                result = rs_reg+$signed(immediate);
             6'h0D:  // ori
                 result = rs_reg | {16'b0, immediate};
             6'h0A: begin  // slti
-                temp_reg = {{(16){immediate[15]}}, immediate};
+                temp_reg = $signed(immediate);
                 if ($signed(rs_reg-temp_reg) < 0) begin
                     flags[1] = 1'b1;
                     result = 32'b1;
@@ -158,7 +158,7 @@ module alu(
                 end
             end
             6'h0B: begin  // sltiu
-                temp_reg = {{(16){immediate[15]}}, immediate};
+                temp_reg = $signed(immediate);
                 if (rs_reg < temp_reg) begin
                     flags[1] = 1'b1;
                     result = 32'b1;
@@ -169,7 +169,7 @@ module alu(
                 end
             end
             6'h2B:  // sw
-                result = rs_reg+{{(16){immediate[15]}}, immediate};
+                result = rs_reg+$signed(immediate);
             6'h0E:  // xori
                 result = rs_reg ^ {16'b0, immediate};
         endcase
