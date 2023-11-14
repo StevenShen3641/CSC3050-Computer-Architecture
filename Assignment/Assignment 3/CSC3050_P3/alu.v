@@ -5,20 +5,20 @@
 // regA: 00000; regB: 00001
 
 module alu(
-    input[31:0] instruction,
-    input[31:0] regA,
-    input[31:0] regB,
-    output reg[31:0] result,
-    output reg[2:0] flags
+    input [31:0] instruction,
+    input [31:0] regA,
+    input [31:0] regB,
+    output reg [31:0] result,
+    output reg [2:0] flags
 );
 
-    wire[5:0] opcode;
-    reg[5:0] funct;
-    reg[4:0] rs, rt, rd, shamt;
-    reg[15:0] immediate;
-    reg[31:0] rs_reg, rt_reg;
+    wire [5:0] opcode;
+    reg [5:0] funct;
+    reg [4:0] rs, rt, rd, shamt;
+    reg [15:0] immediate;
+    reg [31:0] rs_reg, rt_reg;
 
-    reg[31:0] temp_reg;  // for slti and sltiu
+    reg [31:0] temp_reg;  // for slti and sltiu
 
     assign opcode = instruction[31:26];
 

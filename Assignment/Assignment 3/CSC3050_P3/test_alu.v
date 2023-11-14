@@ -3,9 +3,9 @@
 `timescale 1ns/1ps
 
 module test_alu();
-    reg[31:0] instruction, regA, regB;
-    wire[31:0] result;
-    wire[2:0] flags;
+    reg [31:0] instruction, regA, regB;
+    wire [31:0] result;
+    wire [2:0] flags;
 
     alu test(
         .instruction(instruction),
@@ -90,14 +90,14 @@ module test_alu();
         regA = 32'b00000000_00000000_00000000_00000100;
         regB = 32'b11111111_00000000_00000000_11111111;
 
-         // sltu with negative flag = 1
-         #1
+        // sltu with negative flag = 1
+        #1
             $display("sltu with negative flag = 1");
-         instruction = 32'b000000_00000_00001_00000_00000_101011;
-         regA = 32'b00000000_00000000_00000000_00000100;
-         regB = 32'b11111111_00000000_00000000_11111111;
+        instruction = 32'b000000_00000_00001_00000_00000_101011;
+        regA = 32'b00000000_00000000_00000000_00000100;
+        regB = 32'b11111111_00000000_00000000_11111111;
 
-         // sltu with negative flag = 0
+        // sltu with negative flag = 0
         #1
             $display("sltu with negative flag = 0");
         instruction = 32'b000000_00000_00001_00000_00000_101011;
@@ -246,12 +246,12 @@ module test_alu();
         regA = 32'b01111111_11111111_11111111_11111111;
         regB = 32'b00000000_00000000_00000000_00000000;
 
-         // sltiu with negative flag = 1
-         #1
+        // sltiu with negative flag = 1
+        #1
             $display("sltiu with negative flag = 1");
-         instruction = 32'b001011_00000_00001_10000000_00000000;
-         regA = 32'b01111111_11111111_11111111_11111111;
-         regB = 32'b00000000_00000000_00000000_00000000;
+        instruction = 32'b001011_00000_00001_10000000_00000000;
+        regA = 32'b01111111_11111111_11111111_11111111;
+        regB = 32'b00000000_00000000_00000000_00000000;
 
         // sltiu with negative flag = 0
         #1
