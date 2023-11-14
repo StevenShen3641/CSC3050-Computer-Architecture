@@ -18,7 +18,7 @@ module alu(
     reg [15:0] immediate;
     reg [31:0] rs_reg, rt_reg;
 
-    reg [31:0] temp_reg;  // for slti and sltiu
+    reg [31:0] temp_reg;  // sign-extended immediate
 
     assign opcode = instruction[31:26];
 
@@ -80,7 +80,15 @@ module alu(
                     6'h04:  // sllv
                         result = rt_reg << rs_reg;
                     6'h2A: begin  // slt
-                        if ($signed(rs_reg - rt_reg) < 0) begin
+                        if (rs_reg[31] == 1 && rt_reg[31] == 0) begin
+                            flags[1] = 1'b1;
+                            result = 32'b1;
+                        end
+                        else if (rs_reg[31] == 0 && rt_reg[31] == 1) begin
+                            flags[1] = 1'b0;
+                            result = 32'b0;
+                        end
+                        else if ($signed(rs_reg - rt_reg) < 0) begin
                             flags[1] = 1'b1;
                             result = 32'b1;
                         end
@@ -122,13 +130,16 @@ module alu(
 
             // I-type
             6'h08: begin  // addi
-                result = rs_reg + $signed(immediate);
+                temp_reg = $signed(immediate);
+                result = rs_reg + temp_reg;
                 if ({result[31], immediate[15], rs_reg[31]} == {3'b100} || {result[31], immediate[15], rs_reg[31]} == {
                        3'b011})
                     flags[0] = 1;
             end
-            6'h09:  // addiu
-                result = rs_reg + $signed(immediate);
+            6'h09: begin  // addiu
+                temp_reg = $signed(immediate);
+                result = rs_reg + temp_reg;
+            end
             6'h0C:  // andi
                 result = rs_reg & {16'b0, immediate};
             6'h04: begin  // beq
@@ -145,13 +156,23 @@ module alu(
                 else
                     flags[2] = 1'b0;
             end
-            6'h23:  // lw
-                result = rs_reg + $signed(immediate);
+            6'h23: begin  // lw
+                temp_reg = $signed(immediate);
+                result = rs_reg + temp_reg;
+            end
             6'h0D:  // ori
                 result = rs_reg | {16'b0, immediate};
             6'h0A: begin  // slti
                 temp_reg = $signed(immediate);
-                if ($signed(rs_reg - temp_reg) < 0) begin
+                if (rs_reg[31] == 1 && temp_reg[31] == 0) begin
+                    flags[1] = 1'b1;
+                    result = 32'b1;
+                end
+                else if (rs_reg[31] == 0 && temp_reg[31] == 1) begin
+                    flags[1] = 1'b0;
+                    result = 32'b0;
+                end
+                else if ($signed(rs_reg - temp_reg) < 0) begin
                     flags[1] = 1'b1;
                     result = 32'b1;
                 end
@@ -171,8 +192,10 @@ module alu(
                     result = 32'b0;
                 end
             end
-            6'h2B:  // sw
-                result = rs_reg + $signed(immediate);
+            6'h2B: begin  // sw
+                temp_reg = $signed(immediate);
+                result = rs_reg + temp_reg;
+            end
             6'h0E:  // xori
                 result = rs_reg ^ {16'b0, immediate};
         endcase
