@@ -1,6 +1,6 @@
 // `include "alu.v"
 
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
 module test_alu();
     reg [31:0] instruction, regA, regB;
