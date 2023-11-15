@@ -53,7 +53,7 @@ module alu(
             rt_reg = regB;
     end
 
-    // exicute different instructions
+    // execute different instructions
     always @( * ) begin
         flags = 3'b0;  // default the flag
         result = 32'b0;  // default the result registers
