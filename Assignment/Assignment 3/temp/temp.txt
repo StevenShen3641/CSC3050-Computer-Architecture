@@ -1,138 +1,167 @@
-                                   initialize
-instruction = 32'h00000000, regA = 32'h00000000, regB = 32'h00000000, result = 32'h00000000, flags = 3'b000
+add
+instruction:00000000001000000000000000100000; regA:fffffffe regB:00000002 opcode:00 funct:20; result:00000000 flags:000;  I
+nfo: PASS
+instruction:00000000001000000000000000100000; regA:80000001 regB:80000001 opcode:00 funct:20; result:00000002 flags:001;  I
+nfo: PASS
+instruction:00000000001000000000000000100000; regA:7ffffffe regB:00000002 opcode:00 funct:20; result:80000000 flags:001;  I
+nfo: PASS
 
-                                   for R Type
+addi
+instruction:00100000001000001111111111111110; regA:xxxxxxxx regB:00000003 opcode:08 funct:3e; result:00000001 flags:000;  I
+nfo: PASS
+instruction:00100000001000001000000000000000; regA:xxxxxxxx regB:80000000 opcode:08 funct:00; result:7fff8000 flags:001;  I
+nfo: PASS
+instruction:00100000001000000000000000000010; regA:xxxxxxxx regB:7ffffffe opcode:08 funct:02; result:80000000 flags:001;  I
+nfo: PASS
+instruction:00100000001000000000000000000010; regA:xxxxxxxx regB:fffffffd opcode:08 funct:02; result:ffffffff flags:000;  I
+nfo: PASS
 
-                                   format is
+addu
+instruction:00000000001000000000000000100001; regA:fffffffe regB:00000002 opcode:00 funct:21; result:00000000 flags:000;  I
+nfo: PASS
+instruction:00000000001000000000000000100001; regA:80000001 regB:80000001 opcode:00 funct:21; result:00000002 flags:000;  I
+nfo: PASS
+instruction:00000000001000000000000000100001; regA:7fffffff regB:00000001 opcode:00 funct:21; result:80000000 flags:000;  I
+nfo: PASS
+instruction:00000000001000000000000000100001; regA:00000007 regB:00000008 opcode:00 funct:21; result:0000000f flags:000;  I
+nfo: PASS
 
-                      instruction:regA:regB:result:flags
+addiu
+instruction:00100100001000000000000000000111; regA:xxxxxxxx regB:00000008 opcode:09 funct:07; result:0000000f flags:000;  I
+nfo: PASS
+instruction:00100100001000001000000000000000; regA:xxxxxxxx regB:80000000 opcode:09 funct:00; result:7fff8000 flags:000;  I
+nfo: PASS
 
-                                add overflow test
-instruction = 32'h00200020, regA = 32'h7fffffff, regB = 32'h00000006, result = 32'h80000005, flags = 3'b001
+sub
+instruction:00000000001000000000000000100010; regA:fffffffe regB:00000002 opcode:00 funct:22; result:00000004 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000100010; regA:80000001 regB:00000002 opcode:00 funct:22; result:7fffffff flags:001;  I
+nfo: PASS
+instruction:00000000000000010000000000100010; regA:7fffffff regB:ffffffff opcode:00 funct:22; result:80000000 flags:001;  I
+nfo: PASS
 
-                                add normal test
-instruction = 32'h00010020, regA = 32'h00000001, regB = 32'h00000002, result = 32'h00000003, flags = 3'b000
+subu
+instruction:00000000000000010000000000100011; regA:80000001 regB:00000002 opcode:00 funct:23; result:7fffffff flags:000;  I
+nfo: PASS
+instruction:00000000001000000000000000100011; regA:7ffffffe regB:fffffffe opcode:00 funct:23; result:80000000 flags:000;  I
+nfo: PASS
 
-                                sub overflow test
-instruction = 32'h00010022, regA = 32'h7fffffff, regB = 32'hffffffff, result = 32'h80000000, flags = 3'b001
+and
+instruction:00000000001000000000000000100100; regA:00000001 regB:11111111 opcode:00 funct:24; result:00000001 flags:000;  I
+nfo: PASS
 
-                                sub normal test
-instruction = 32'h00010022, regA = 32'h00000004, regB = 32'h00000003, result = 32'h00000001, flags = 3'b000
+andi
+instruction:00110000001000000000000000000001; regA:xxxxxxxx regB:ffffffff opcode:0c funct:01; result:00000001 flags:000;  I
+nfo: PASS
 
-                                  addu test
-instruction = 32'h00200021, regA = 32'h7fffffff, regB = 32'h00000006, result = 32'h80000005, flags = 3'b000
+nor
+instruction:00000000001000000000000000100111; regA:00000001 regB:00000010 opcode:00 funct:27; result:ffffffee flags:000;  I
+nfo: PASS
 
-                                  subu test
-instruction = 32'h00010023, regA = 32'h7fffffff, regB = 32'hffffffff, result = 32'h80000000, flags = 3'b000
+or
+instruction:00000000001000000000000000100101; regA:00000001 regB:00000010 opcode:00 funct:25; result:00000011 flags:000;  I
+nfo: PASS
 
-                                  and test
-instruction = 32'h00010024, regA = 32'hffffffff, regB = 32'h00000001, result = 32'h00000001, flags = 3'b000
+ori
+instruction:00110100001000000000000000000001; regA:xxxxxxxx regB:00000010 opcode:0d funct:01; result:00000011 flags:000;  I
+nfo: PASS
 
-                                   or test
-instruction = 32'h00200025, regA = 32'h00000000, regB = 32'h00000001, result = 32'h00000001, flags = 3'b000
+xor
+instruction:00000000001000000000000000100110; regA:00000001 regB:00000003 opcode:00 funct:26; result:00000002 flags:000;  I
+nfo: PASS
 
-                                  xor test
-instruction = 32'h00200026, regA = 32'hffffffff, regB = 32'h0000000f, result = 32'hfffffff0, flags = 3'b000
+xori
+instruction:00111000001000000000000000000001; regA:xxxxxxxx regB:00000003 opcode:0e funct:01; result:00000002 flags:000;  I
+nfo: PASS
 
-                                  nor test
-instruction = 32'h00200027, regA = 32'h00000000, regB = 32'hffffffff, result = 32'h00000000, flags = 3'b000
+beq
+instruction:00010000001000001000000000100000; regA:00000002 regB:00000002 opcode:04 funct:20; result:00000000 flags:100;  I
+nfo: PASS
+instruction:00010000000000011000000000100000; regA:00000003 regB:00000002 opcode:04 funct:20; result:00000001 flags:000;  I
+nfo: PASS
 
-                             slt test(negative)
-instruction = 32'h0001002a, regA = 32'h00000000, regB = 32'h00000001, result = 32'h00000001, flags = 3'b010
+bne
+instruction:00010100001000001000000000100000; regA:00000002 regB:00000002 opcode:05 funct:20; result:00000000 flags:100;  I
+nfo: PASS
+instruction:00010100000000011000000000100000; regA:00000003 regB:00000002 opcode:05 funct:20; result:00000001 flags:000;  I
+nfo: PASS
 
-                          slt test(non-negative)
-instruction = 32'h0001002a, regA = 32'h00000001, regB = 32'h00000000, result = 32'h00000000, flags = 3'b000
+slt
+instruction:00000000000000010000000000101010; regA:fffffffb regB:ffffffff opcode:00 funct:2a; result:fffffffc flags:010;  I
+nfo: PASS
+instruction:00000000000000010000000000101010; regA:00000005 regB:00000005 opcode:00 funct:2a; result:00000000 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000101010; regA:00000008 regB:fffffff7 opcode:00 funct:2a; result:00000011 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000101010; regA:fffffff7 regB:00000008 opcode:00 funct:2a; result:ffffffef flags:010;  I
+nfo: PASS
 
-                           sltu test(negative)
-instruction = 32'h0001002b, regA = 32'h00000000, regB = 32'hffffffff, result = 32'h00000001, flags = 3'b010
+slti
+instruction:00101000001000001000000000000001; regA:xxxxxxxx regB:00000002 opcode:0a funct:01; result:00008001 flags:000;  I
+nfo: PASS
+instruction:00101000001000000000000000000101; regA:xxxxxxxx regB:00000003 opcode:0a funct:05; result:fffffffe flags:010;  I
+nfo: PASS
+instruction:00101000001000001111111111111111; regA:xxxxxxxx regB:fffffffd opcode:0a funct:3f; result:fffffffe flags:010;  I
+nfo: PASS
+instruction:00101000001000000111111111111111; regA:xxxxxxxx regB:fffffffd opcode:0a funct:3f; result:ffff7ffe flags:010;  I
+nfo: PASS
 
-                                sltu test
-instruction = 32'h0001002b, regA = 32'hffffffff, regB = 32'hfffffffe, result = 32'h00000000, flags = 3'b000
+sltiu
+instruction:00101100001000001111111111111111; regA:xxxxxxxx regB:fffffffd opcode:0b funct:3f; result:fffffffe flags:010;  I
+nfo: PASS
+instruction:00101100001000000111111111111111; regA:xxxxxxxx regB:fffffffd opcode:0b funct:3f; result:ffff7ffe flags:000;  I
+nfo: PASS
 
-                                sll test
-instruction = 32'h00010280, regA = 32'h00000000, regB = 32'h00000001, result = 32'h00000400, flags = 3'b000
+sltu
+instruction:00000000001000000000000000101011; regA:ffffffff regB:fffffffd opcode:00 funct:2b; result:fffffffe flags:010;  I
+nfo: PASS
+instruction:00000000001000000000000000101011; regA:fffffffd regB:ffffffff opcode:00 funct:2b; result:00000002 flags:000;  I
+nfo: PASS
 
-                                srl test
-instruction = 32'h00010282, regA = 32'h00000000, regB = 32'hf0000000, result = 32'h003c0000, flags = 3'b000
+lw
+instruction:10001100001000001111111111111111; regA:xxxxxxxx regB:fffffffd opcode:23 funct:3f; result:fffffffc flags:000;  I
+nfo: PASS
+instruction:10001100001000000000000000000011; regA:xxxxxxxx regB:00000002 opcode:23 funct:03; result:00000005 flags:000;  I
+nfo: PASS
 
-                                sllv test
-instruction = 32'h00010004, regA = 32'h00000010, regB = 32'h00000001, result = 32'h00010000, flags = 3'b000
+sw
+instruction:10101100001000001111111111111111; regA:xxxxxxxx regB:fffffffd opcode:2b funct:3f; result:fffffffc flags:000;  I
+nfo: PASS
+instruction:10101100001000000000000000000011; regA:xxxxxxxx regB:00000002 opcode:2b funct:03; result:00000005 flags:000;  I
+nfo: PASS
 
-                                srlv test
-instruction = 32'h00010006, regA = 32'h00000004, regB = 32'h00000100, result = 32'h00000010, flags = 3'b000
+sll
+instruction:00000000000000010000000010000000; regA:xxxxxxxx regB:00000001 opcode:00 funct:00; result:00000004 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000011000000; regA:xxxxxxxx regB:00000111 opcode:00 funct:00; result:00000888 flags:000;  I
+nfo: PASS
 
-                                srav test
-instruction = 32'h00010007, regA = 32'h00000001, regB = 32'h00000100, result = 32'h00000080, flags = 3'b000
+sllv
+instruction:00000000000000010000000000000100; regA:00000004 regB:00000001 opcode:00 funct:04; result:00000010 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000000100; regA:000000e3 regB:00000111 opcode:00 funct:04; result:00000888 flags:000;  I
+nfo: PASS
 
-                                sra test
-instruction = 32'h00010083, regA = 32'h00000000, regB = 32'h10000000, result = 32'h04000000, flags = 3'b000
+srl
+instruction:00000000000000010000000010000010; regA:xxxxxxxx regB:00000008 opcode:00 funct:02; result:00000002 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000011000010; regA:xxxxxxxx regB:00000002 opcode:00 funct:02; result:00000000 flags:000;  I
+nfo: PASS
 
-                                         for I Type
+srlv
+instruction:00000000000000010000000000000110; regA:00000002 regB:00000008 opcode:00 funct:06; result:00000002 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000000110; regA:000000e3 regB:00000008 opcode:00 funct:06; result:00000001 flags:000;  I
+nfo: PASS
 
-                                         format is
+sra
+instruction:00000000000000010000000010000011; regA:xxxxxxxx regB:00000008 opcode:00 funct:03; result:00000002 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000100000011; regA:xxxxxxxx regB:ffffff00 opcode:00 funct:03; result:fffffff0 flags:000;  I
+nfo: PASS
 
-                        instruction:regA:regB:immediate:result:flags
-
-                                         addi test
-instruction = 32'h20200001, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-01, flags = 3'b000
-
-                                     addi test(overflow)
-instruction = 32'h20200101, regA = 32'hffffffff, regB = 32'hffffffff, immediate = 16'b0000000100000001, result = 32'h000001
-00, flags = 3'b000
-
-                                        andi test
-instruction = 32'h30010001, regA = 32'hffffffff, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-01, flags = 3'b000
-
-                                        addiu test
-instruction = 32'h22018001, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b1000000000000001, result = 32'hffff80
-01, flags = 3'b000
-
-                                         ori test
-instruction = 32'h32010001, regA = 32'h00000010, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-00, flags = 3'b000
-
-                                        xori test
-instruction = 32'h38010001, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-00, flags = 3'b000
-
-                                   slti test(negative)
-instruction = 32'h28010001, regA = 32'h00000000, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-01, flags = 3'b010
-
-                                        slti test
-instruction = 32'h28010000, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b0000000000000000, result = 32'h000000
-00, flags = 3'b000
-
-                                     beq test(zero)
-instruction = 32'h10010001, regA = 32'h00000001, regB = 32'h00000001, immediate = 16'b0000000000000001, result = 32'h000000
-00, flags = 3'b100
-
-                                   beq test(non-zero)
-instruction = 32'h10010001, regA = 32'h00000000, regB = 32'h00000001, immediate = 16'b0000000000000001, result = 32'hffffff
-ff, flags = 3'b000
-
-                                   bne test(non-zero)
-instruction = 32'h14010001, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b0000000000000001, result = 32'h000000
-01, flags = 3'b000
-
-                                     bne test(zero)
-instruction = 32'h14010001, regA = 32'h00000001, regB = 32'h00000001, immediate = 16'b0000000000000001, result = 32'h000000
-00, flags = 3'b100
-
-                                  sltiu test(negative)
-instruction = 32'h2c010010, regA = 32'h00000001, regB = 32'h00000000, immediate = 16'b0000000000010000, result = 32'h000000
-01, flags = 3'b010
-
-                                sltiu test(non-negative)
-instruction = 32'h2c010010, regA = 32'h00000100, regB = 32'h00000000, immediate = 16'b0000000000010000, result = 32'h000000
-00, flags = 3'b000
-
-                                        lw test
-instruction = 32'h8c01700f, regA = 32'h00000100, regB = 32'h00000000, immediate = 16'b0111000000001111, result = 32'h000071
-0f, flags = 3'b000
-
-                                        sw test
-instruction = 32'hac01700f, regA = 32'h00000100, regB = 32'h00000000, immediate = 16'b0111000000001111, result = 32'h000071
-0f, flags = 3'b000
+srav
+instruction:00000000000000010000000000000111; regA:00000004 regB:0000000f opcode:00 funct:07; result:00000000 flags:000;  I
+nfo: PASS
+instruction:00000000000000010000000000000111; regA:00000004 regB:80000000 opcode:00 funct:07; result:f8000000 flags:000;  I
+nfo: PASS

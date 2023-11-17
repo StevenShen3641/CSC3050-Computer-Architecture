@@ -1,203 +1,527 @@
-// flags[2] : zero flag
-// flags[1] : negative flag
-// flags[0] : overflow flag 
+module alu(instruction, regA, regB, result, flags);
 
-// regA: 00000; regB: 00001
+input[31:0] instruction, regA, regB;
+output[31:0] result;
+output[2:0] flags;
 
-module alu(
-    input [31:0] instruction,
-    input [31:0] regA,
-    input [31:0] regB,
-    output reg [31:0] result,
-    output reg [2:0] flags
-);
+reg[5:0] opcode, funct;
+reg[4:0] shamt;
+reg signed[31:0] signed_rs, signed_rt, ALU_result;
+reg[31:0] unsigned_rs, unsigned_rt;
+reg[31:0] immediate;
+reg[2:0] flags;
+reg[4:0] rs;
+reg[4:0] rt;
+reg check_bit; //it is used to check the overflow
 
-    wire [5:0] opcode;
-    reg [5:0] funct;
-    reg [4:0] rs, rt, rd, shamt;
-    reg [15:0] immediate;
-    reg [31:0] rs_reg, rt_reg;
 
-    reg [31:0] temp_reg;  // sign-extended immediate
+always @ (instruction, regA, regB)
+begin
+    opcode = instruction[31:26];
+    shamt = instruction[10:6];
+    funct = instruction[5:0];
+    immediate = {{16{instruction[15]}},instruction[15:0]};
+    rs = instruction[25:21];
+    rt = instruction[20:16];
 
-    assign opcode = instruction[31:26];
-
-    // parse instruction
-    always @( * ) begin
-        // R-type
-        if (opcode == 6'b0) begin
-            rs = instruction[25:21];
-            rt = instruction[20:16];
-            rd = instruction[15:11];
-            shamt = instruction[10:6];
-            funct = instruction[5:0];
+    if (opcode==6'b000000)
+    begin
+        //add
+        if (funct==6'h20)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            {check_bit, ALU_result} = {signed_rs[31],signed_rs} + {signed_rt[31],signed_rt};
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = check_bit ^ ALU_result[31];
         end
-            // I-type
-        else begin
-            rs = instruction[25:21];
-            rt = instruction[20:16];
-            immediate = instruction[15:0];
+        //addu
+        else if (funct==6'h21)
+        begin
+            if (rs==5'b00000)
+            begin
+                unsigned_rs = regA;
+                unsigned_rt = regB;
+            end
+            else
+            begin
+                unsigned_rs = regB;
+                unsigned_rt = regA;
+            end
+            ALU_result = unsigned_rs + unsigned_rt;
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //sub
+        else if (funct==6'h22)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            {check_bit, ALU_result} = {signed_rs[31],signed_rs} - {signed_rt[31],signed_rt};
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = check_bit ^ ALU_result[31];
+        end
+        //subu
+        else if (funct==6'h23)
+        begin
+            if (rs==5'b00000)
+            begin
+                unsigned_rs = regA;
+                unsigned_rt = regB;
+            end
+            else
+            begin
+                unsigned_rs = regB;
+                unsigned_rt = regA;
+            end
+            ALU_result = unsigned_rs - unsigned_rt;
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //and
+        else if (funct==6'h24)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rs & signed_rt;
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //nor
+        else if (funct==6'h27)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = ~(signed_rs | signed_rt);
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //or
+        else if (funct==6'h25)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rs | signed_rt;
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //xor
+        else if (funct==6'h26)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rs ^ signed_rt;
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //slt
+        else if (funct==6'h2a)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rs - signed_rt;
+            flags[2] = 1'b0;
+            if (signed_rs<signed_rt)
+            begin
+                flags[1] = 1;
+            end
+            else
+            begin
+                flags[1] = 0;
+            end
+            flags[0] = 1'b0;
+        end
+        //sltu
+        else if (funct==6'h2b)
+        begin
+            if (rs==5'b00000)
+            begin
+                unsigned_rs = regA;
+                unsigned_rt = regB;
+            end
+            else
+            begin
+                unsigned_rs = regB;
+                unsigned_rt = regA;
+            end
+            ALU_result = unsigned_rs - unsigned_rt;
+            flags[2] = 1'b0;
+            if (unsigned_rs<unsigned_rt)
+            begin
+                flags[1] = 1;
+            end
+            else
+            begin
+                flags[1] = 0;
+            end
+            flags[0] = 1'b0;
+        end
+        //sll
+        else if (funct==6'h00)
+        begin
+            if (rt==5'b00000)
+            begin
+                signed_rt = regA;
+            end
+            else
+            begin
+                signed_rt = regB;
+            end
+            ALU_result = signed_rt << {{27{1'b0}},shamt};
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //sllv
+        else if (funct==6'h04)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rt << signed_rs[4:0];
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //srl
+        else if (funct==6'h02)
+        begin
+            if (rt==5'b00000)
+            begin
+                signed_rt = regA;
+            end
+            else
+            begin
+                signed_rt = regB;
+            end
+            ALU_result = signed_rt >> {{27{1'b0}},shamt};
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //srlv
+        else if (funct==6'h06)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rt >> signed_rs[4:0];
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //sra
+        else if (funct==6'h03)
+        begin
+            if (rt==5'b00000)
+            begin
+                signed_rt = regA;
+            end
+            else
+            begin
+                signed_rt = regB;
+            end
+            ALU_result = signed_rt >>> {{27{1'b0}},shamt};
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
+        end
+        //srav
+        else if (funct==6'h07)
+        begin
+            if (rs==5'b00000)
+            begin
+                signed_rs = regA;
+                signed_rt = regB;
+            end
+            else
+            begin
+                signed_rs = regB;
+                signed_rt = regA;
+            end
+            ALU_result = signed_rt >>> signed_rs[4:0];
+            flags[2] = 1'b0;
+            flags[1] = 1'b0;
+            flags[0] = 1'b0;
         end
     end
-
-    // fetch register values
-    // we only have 00000 and 00001
-    always @( * ) begin
-        if (rs == 5'b0)
-            rs_reg = regA;
+    //addi
+    else if (opcode==6'b001000)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
         else
-            rs_reg = regB;
-        if (rt == 5'b0)
-            rt_reg = regA;
+        begin
+            signed_rs = regB;
+        end
+        {check_bit, ALU_result} = {signed_rs[31],signed_rs} + {immediate[31],immediate};
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = check_bit ^ ALU_result[31];
+    end
+    //addiu
+    else if (opcode==6'b001001)
+    begin
+        if (rs==5'b00000)
+        begin
+            unsigned_rs = regA;
+        end
         else
-            rt_reg = regB;
+        begin
+            unsigned_rs = regB;
+        end
+        ALU_result = unsigned_rs + immediate;
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
     end
-
-    // execute different instructions
-    always @( * ) begin
-        flags = 3'b0;  // default the flag
-        result = 32'b0;  // default the result registers
-        case (opcode)
-            // R-type
-            6'h00: begin
-                case (funct)
-                    6'h20: begin  // add
-                        result = rs_reg + rt_reg;
-                        if ({result[31], rs_reg[31], rt_reg[31]} == {3'b011} || {result[31], rs_reg[31], rt_reg[31]} ==
-                       {3'b100})
-                            flags[0] = 1'b1;
-                    end
-                    6'h21:  // addu
-                        result = rs_reg + rt_reg;
-                    6'h24:  // and
-                        result = rs_reg & rt_reg;
-                    6'h27:  // nor
-                        result = ~ (rs_reg | rt_reg);
-                    6'h25:  // or
-                        result = rs_reg | rt_reg;
-                    6'h00:  // sll
-                        result = rt_reg << shamt;
-                    6'h04:  // sllv
-                        result = rt_reg << rs_reg;
-                    6'h2A: begin  // slt
-                        if (rs_reg[31] == 1 && rt_reg[31] == 0) begin
-                            flags[1] = 1'b1;
-                            result = 32'b1;
-                        end
-                        else if (rs_reg[31] == 0 && rt_reg[31] == 1) begin
-                            flags[1] = 1'b0;
-                            result = 32'b0;
-                        end
-                        else if ($signed(rs_reg - rt_reg) < 0) begin
-                            flags[1] = 1'b1;
-                            result = 32'b1;
-                        end
-                        else begin
-                            flags[1] = 1'b0;
-                            result = 32'b0;
-                        end
-                    end
-                    6'h2B: begin  // sltu
-                        if (rs_reg < rt_reg) begin
-                            flags[1] = 1'b1;
-                            result = 32'b1;
-                        end
-                        else begin
-                            flags[1] = 1'b0;
-                            result = 32'b0;
-                        end
-                    end
-                    6'h03:  // sra
-                        result = $signed(rt_reg) >>> shamt;
-                    6'h07:  // srav
-                        result = $signed(rt_reg) >>> rs_reg;
-                    6'h02:  // srl
-                        result = rt_reg >> shamt;
-                    6'h06:  // srlv
-                        result = rt_reg >> rs_reg;
-                    6'h22: begin  // sub
-                        result = rs_reg - rt_reg;
-                        if ({result[31], rs_reg[31], rt_reg[31]} == {3'b101} || {result[31], rs_reg[31], rt_reg[31]} ==
-                       {3'b010})
-                            flags[0] = 1;
-                    end
-                    6'h23:  // subu
-                        result = rs_reg - rt_reg;
-                    6'h26:  // xor
-                        result = rs_reg ^ rt_reg;
-                endcase
-            end
-
-            // I-type
-            6'h08: begin  // addi
-                temp_reg = $signed(immediate);
-                result = rs_reg + temp_reg;
-                if ({result[31], immediate[15], rs_reg[31]} == {3'b100} || {result[31], immediate[15], rs_reg[31]} == {
-                       3'b011})
-                    flags[0] = 1;
-            end
-            6'h09: begin  // addiu
-                temp_reg = $signed(immediate);
-                result = rs_reg + temp_reg;
-            end
-            6'h0C:  // andi
-                result = rs_reg & {16'b0, immediate};
-            6'h04: begin  // beq
-                result = rs_reg - rt_reg;
-                if (result == 32'b0)
-                    flags[2] = 1'b1;
-                else
-                    flags[2] = 1'b0;
-            end
-            6'h05: begin  // bne
-                result = rs_reg - rt_reg;
-                if (result == 32'b0)
-                    flags[2] = 1'b1;
-                else
-                    flags[2] = 1'b0;
-            end
-            6'h23: begin  // lw
-                temp_reg = $signed(immediate);
-                result = rs_reg + temp_reg;
-            end
-            6'h0D:  // ori
-                result = rs_reg | {16'b0, immediate};
-            6'h0A: begin  // slti
-                temp_reg = $signed(immediate);
-                if (rs_reg[31] == 1 && temp_reg[31] == 0) begin
-                    flags[1] = 1'b1;
-                    result = 32'b1;
-                end
-                else if (rs_reg[31] == 0 && temp_reg[31] == 1) begin
-                    flags[1] = 1'b0;
-                    result = 32'b0;
-                end
-                else if ($signed(rs_reg - temp_reg) < 0) begin
-                    flags[1] = 1'b1;
-                    result = 32'b1;
-                end
-                else begin
-                    flags[1] = 1'b0;
-                    result = 32'b0;
-                end
-            end
-            6'h0B: begin  // sltiu
-                temp_reg = $signed(immediate);
-                if (rs_reg < temp_reg) begin
-                    flags[1] = 1'b1;
-                    result = 32'b1;
-                end
-                else begin
-                    flags[1] = 1'b0;
-                    result = 32'b0;
-                end
-            end
-            6'h2B: begin  // sw
-                temp_reg = $signed(immediate);
-                result = rs_reg + temp_reg;
-            end
-            6'h0E:  // xori
-                result = rs_reg ^ {16'b0, immediate};
-        endcase
+    //andi
+    else if (opcode==6'b001100)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        immediate = {{16{1'b0}},instruction[15:0]};
+        ALU_result = signed_rs & immediate;
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
     end
+    //ori
+    else if (opcode==6'b001101)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        immediate = {{16{1'b0}},instruction[15:0]};
+        ALU_result = signed_rs | immediate;
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+    //xori
+    else if (opcode==6'b001110)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        immediate = {{16{1'b0}},instruction[15:0]};
+        ALU_result = signed_rs ^ immediate;
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+    //beq
+    else if (opcode==6'b000100)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+            signed_rt = regB;
+        end
+        else
+        begin
+            signed_rs = regB;
+            signed_rt = regA;
+        end
+        ALU_result = signed_rs - signed_rt;
+        flags[2] = (ALU_result==32'b0) ? 1 : 0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+    //bne
+    else if (opcode==6'b000101)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+            signed_rt = regB;
+        end
+        else
+        begin
+            signed_rs = regB;
+            signed_rt = regA;
+        end
+        ALU_result = signed_rs - signed_rt;
+        flags[2] = (ALU_result==32'b0) ? 1 : 0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+    //slti
+    else if (opcode==6'b001010)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        ALU_result = signed_rs - $signed(immediate);
+        flags[2] = 1'b0;
+        if (signed_rs < $signed(immediate))
+        begin
+            flags[1] = 1;
+        end
+        else
+        begin
+            flags[1] = 0;
+        end
+        flags[0] = 1'b0;
+    end
+    //sltiu
+    else if (opcode==6'b001011)
+    begin
+        if (rs==5'b00000)
+        begin
+            unsigned_rs = regA;
+        end
+        else
+        begin
+            unsigned_rs = regB;
+        end
+        ALU_result = unsigned_rs - $unsigned(immediate);
+        flags[2] = 1'b0;
+        if (unsigned_rs < $unsigned(immediate))
+        begin
+            flags[1] = 1;
+        end
+        else
+        begin
+            flags[1] = 0;
+        end
+        flags[0] = 1'b0;
+    end
+    //lw
+    else if (opcode==6'b100011)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        ALU_result = signed_rs + $signed(immediate);
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+    //sw
+    else if (opcode==6'b101011)
+    begin
+        if (rs==5'b00000)
+        begin
+            signed_rs = regA;
+        end
+        else
+        begin
+            signed_rs = regB;
+        end
+        ALU_result = signed_rs + $signed(immediate);
+        flags[2] = 1'b0;
+        flags[1] = 1'b0;
+        flags[0] = 1'b0;
+    end
+end
+
+assign result = ALU_result[31:0];
+
 endmodule

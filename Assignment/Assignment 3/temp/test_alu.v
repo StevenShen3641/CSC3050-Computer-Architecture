@@ -1,221 +1,148 @@
 `timescale 1ns/1ps
 
-module test();
-reg  [31:0] instruction;
-reg  [31:0] regA;
-reg  [31:0] regB;
-wire [31:0] result;
-wire [2:0] flags;
+module alu_test;
 
-  initial begin
-    $dumpfile("test.vcd");
-    $dumpvars;
-  end
+reg[31:0] instruction,regA,regB;
+wire[31:0] result;
+wire[2:0] flags;
 
-  initial begin
-	$display("\n                                   initialize");
-	$monitor("instruction = 32'h%h, regA = 32'h%h, regB = 32'h%h, result = 32'h%h, flags = 3'b%b",instruction,regA,regB,result,flags);
-        instruction = 32'b0;
-        regA = 32'b0; 
-        regB = 32'b0;
-        #500
-	$display("\n                                   for R Type");
-	$display("\n                                   format is");
-	$display("\n                      instruction:regA:regB:result:flags");
-	$display("\n                                add overflow test");
-        instruction = 32'h00200020;   // testing for add overflow
-        regA = 32'h7FFFFFFF;
-        regB = 32'h00000006;
-        #100
-	$display("\n                                add normal test");
-	instruction = 32'h00010020;   // testing for add normal
-	regA = 32'h00000001;
-	regB = 32'h00000002;
-	#100
-	$display("\n                                sub overflow test");
-        instruction = 32'h00010022;   // testing for sub overflow
-        regA = 32'h7FFFFFFF;
-        regB = 32'hFFFFFFFF;
-	#100
-	$display("\n                                sub normal test");
-	instruction = 32'h00010022;   // testing for sub normal
-	regA = 32'h00000004;
-	regB = 32'h00000003;
-	#100
-	$display("\n                                  addu test");
-	instruction = 32'h00200021;   // testing for addu 
-	regA = 32'h7FFFFFFF;
-	regB = 32'h00000006;
-	#100 
-	$display("\n                                  subu test");
-	instruction = 32'h00010023;   // testing for subu
-	regA = 32'h7FFFFFFF;
-	regB = 32'hFFFFFFFF;
-	#100
-	$display("\n                                  and test");
-	instruction = 32'h00010024;   // testing for and
-	regA = 32'hFFFFFFFF;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                   or test");
-	instruction = 32'h00200025;   // testing for or
-	regA = 32'h00000000;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                  xor test");
-	instruction = 32'h00200026;  // testing for xor
-	regA = 32'hFFFFFFFF;
-	regB = 32'h0000000F;
-	#100
-	$display("\n                                  nor test");
-	instruction = 32'h00200027;  //testing for nor
-	regA = 32'h00000000;
-	regB = 32'hFFFFFFFF;
-	#100
-	$display("\n                             slt test(negative)");
-	instruction = 32'h0001002A;  // testing for slt
-	regA = 32'h00000000;
-	regB = 32'h00000001;
-	#100
-	$display("\n                          slt test(non-negative)");
-	instruction = 32'h0001002A;
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                           sltu test(negative)");
-	instruction = 32'h0001002B;  // testing for sltu
-	regA = 32'h00000000;
-	regB = 32'hFFFFFFFF;
-	#100
-	$display("\n                                sltu test");
-	instruction = 32'h0001002B;  // testing for sltu
-	regA = 32'hFFFFFFFF;
-	regB = 32'hFFFFFFFE;
-	#100
-	$display("\n                                sll test");
-	instruction = 32'h00010280;  // testing for sll (10)
-	regA = 32'h00000000;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                srl test");
-	instruction = 32'h00010282;  //testing for srl(10)
-	regA = 32'h00000000;
-	regB = 32'hF0000000;
-	#100
-        $display("\n                                sllv test");
-	instruction = 32'h00010004; //testing for sllv
-	regA = 32'h00000010;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                srlv test");
-	instruction = 32'h00010006; // testing for srlv
-	regA = 32'h00000004;
-	regB = 32'h00000100;
-	#100
-	$display("\n                                srav test");
-	instruction = 32'h00010007; // testing for srav
-	regA = 32'h00000001;
-	regB = 32'h00000100;
-	#100
-	$display("\n                                sra test");
-	instruction = 32'h00010083; // testing for sra
-	regA = 32'h00000000;
-	regB = 32'h10000000;
-	#100
-	$display("\n                                         for I Type");
-	$display("\n                                         format is");
-	$display("\n                        instruction:regA:regB:immediate:result:flags");
-	$monitor("instruction = 32'h%h, regA = 32'h%h, regB = 32'h%h, immediate = 16'b%b, result = 32'h%h, flags = 3'b%b",instruction,regA,regB,instruction[15:0],result,flags);
-	$display("\n                                         addi test");
-	instruction = 32'h20200001;  // testing for addi
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                     addi test(overflow)");
-	instruction = 32'h20200101;  // testing for addi
-	regA = 32'hFFFFFFFF;
-	regB = 32'hFFFFFFFF;
-	#100
-	$display("\n                                        andi test");
-	instruction = 32'h30010001;  // testing for andi
-	regA = 32'hFFFFFFFF;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                        addiu test");
-	instruction = 32'h22018001;  //testing for addiu
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                         ori test");
-	instruction = 32'h32010001; //testing for ori
-	regA = 32'h00000010;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                        xori test");
-	instruction = 32'h38010001; //testing for xori
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                   slti test(negative)");
-	instruction = 32'h28010001; //testing for slti
-	regA = 32'h00000000;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                        slti test");
-	instruction = 32'h28010000; //testing for slti
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                     beq test(zero)");
-	instruction = 32'h10010001; //testing for beq
-	regA = 32'h00000001;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                   beq test(non-zero)");
-	instruction = 32'h10010001; //testing for beq
-	regA = 32'h00000000;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                   bne test(non-zero)");
-	instruction = 32'h14010001; //testing for bne
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                     bne test(zero)");
-	instruction = 32'h14010001; //testing for bne
-	regA = 32'h00000001;
-	regB = 32'h00000001;
-	#100
-	$display("\n                                  sltiu test(negative)");
-	instruction = 32'h2C010010; //testing for sltiu
-	regA = 32'h00000001;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                sltiu test(non-negative)");
-	instruction = 32'h2C010010; //testing for sltiu
-	regA = 32'h00000100;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                        lw test");
-	instruction = 32'h8C01700f; //testing for lw
-	regA = 32'h00000100;
-	regB = 32'h00000000;
-	#100
-	$display("\n                                        sw test");
-	instruction = 32'hAC01700f; //testing for sw
-	regA = 32'h00000100;
-	regB = 32'h00000000;
-	#100
-    $stop;
-  end
+alu testalu(instruction, regA, regB, result, flags);
 
-alu  u_add(
-    .instruction( instruction ),
-    .regA( regA ),
-    .regB( regB ),
-    .result( result ),
-    .flags(flags)
-);
+task test_bench;
+    input[31:0] instruction_t;
+    input[31:0] regA_t, regB_t;
+    input[31:0] result_t;
+    input[2:0] flags_t;
+    begin
+        instruction = instruction_t;
+        regA = regA_t;
+        regB = regB_t;
+        #10
+        $write("instruction:%b; regA:%h regB:%h opcode:%h funct:%h; result:%h flags:%b;\tInfo: ",instruction_t,regA_t,regB_t,testalu.opcode,testalu.funct,result,flags);
+        if(result === result_t && flags === flags_t)
+            $display("PASS");
+        else
+            $display("WRONG");       
+    end
+endtask
+
+initial
+begin
+
+#10 $display("add");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100000,-2,2,0,3'b000); // -2+2=0
+#10 test_bench(32'b000000_00001_00000_00000_00000_100000,32'h80000001,32'h80000001,32'h00000002,3'b001); //10...01+10...01=0...10 overflow
+#10 test_bench(32'b000000_00001_00000_00000_00000_100000,32'h7ffffffe,32'h00000002,32'h80000000,3'b001); // 01...10+0...010=10...0 overflow
+
+#10 $display("\naddi");
+#10 test_bench(32'b001000_00001_00000_1111111111111110,32'bx,3,1,3'b000);//-2+3=1
+#10 test_bench(32'b001000_00001_00000_1000000000000000,32'bx,32'h80000000,32'h7fff8000,3'b001);//10...0+1...10...0=01...10...0 overflow
+#10 test_bench(32'b001000_00001_00000_0000000000000010,32'bx,32'h7ffffffe,32'h80000000,3'b001); //01...10+0...010=10...0 overflow 
+#10 test_bench(32'b001000_00001_00000_0000000000000010,32'bx,-3,-1,3'b000);
+
+#10 $display("\naddu");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100001,-2,2,0,3'b000);
+#10 test_bench(32'b000000_00001_00000_00000_00000_100001,-2147483647,-2147483647,2,3'b000);
+#10 test_bench(32'b000000_00001_00000_00000_00000_100001,2147483647,1,32'h80000000,3'b000);
+#10 test_bench(32'b000000_00001_00000_00000_00000_100001,7,8,15,3'b000);
+
+#10 $display("\naddiu");
+#10 test_bench(32'b001001_00001_00000_0000000000000111,32'bx,8,15,3'b000);
+#10 test_bench(32'b001001_00001_00000_1000000000000000,32'bx,32'h80000000,32'h7fff8000,3'b000);
+
+#10 $display("\nsub");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100010,-2,2,4,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_100010,-2147483647,2,32'h7fffffff,3'b001);
+#10 test_bench(32'b000000_00000_00001_00000_00000_100010,32'h7fffffff,-1,32'h80000000,3'b001);
+
+#10 $display("\nsubu");
+#10 test_bench(32'b000000_00000_00001_00000_00000_100011,-2147483647,2,32'h7fffffff,3'b000);
+#10 test_bench(32'b000000_00001_00000_00000_00000_100011,2147483646,-2,32'h8000_0000,3'b000);
+
+#10 $display("\nand");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100100,32'h00000001,32'h11111111,32'h0000_0001,3'b000);
+
+#10 $display("\nandi");
+#10 test_bench(32'b001100_00001_00000_0000000000000001,32'bx,32'hffffffff,32'h00000001,3'b000);
+
+#10 $display("\nnor");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100111,32'h00000001,32'h00000010,32'hffffffee,3'b000);
+
+#10 $display("\nor");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100101,32'h00000001,32'h00000010,32'h00000011,3'b000);
+
+#10 $display("\nori");
+#10 test_bench(32'b001101_00001_00000_0000000000000001,32'bx,32'h00000010,32'h00000011,3'b000);
+
+#10 $display("\nxor");
+#10 test_bench(32'b000000_00001_00000_00000_00000_100110,32'b00000001,32'b00000011,32'b00000010,3'b000);
+
+#10 $display("\nxori");
+#10 test_bench(32'b001110_00001_00000_0000000000000001,32'bx,32'b00000011,32'b00000010,3'b000);
+
+#10 $display("\nbeq");
+#10 test_bench(32'b000100_00001_00000_1000000000100000,2,2,32'b0,3'b100);
+#10 test_bench(32'b000100_00000_00001_1000000000100000,3,2,32'b1,3'b000);
+
+#10 $display("\nbne");
+#10 test_bench(32'b000101_00001_00000_1000000000100000,2,2,32'b0,3'b100);
+#10 test_bench(32'b000101_00000_00001_1000000000100000,3,2,32'b1,3'b000);
+
+#10 $display("\nslt");
+#10 test_bench(32'b000000_00000_00001_00000_00000_101010,-5,-1,32'hfffffffc,3'b010);
+#10 test_bench(32'b000000_00000_00001_00000_00000_101010,5,5,32'b0,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_101010,8,-9,32'h11,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_101010,-9,8,32'hffffffef,3'b010);
+
+#10 $display("\nslti");
+#10 test_bench(32'b001010_00001_00000_1000000000000001,32'bx,2,32'h00008001,3'b000);
+#10 test_bench(32'b001010_00001_00000_0000000000000101,32'bx,3,-2,3'b010);
+#10 test_bench(32'b001010_00001_00000_1111111111111111,32'bx,-3,32'hfffffffe,3'b010);
+#10 test_bench(32'b001010_00001_00000_0111111111111111,32'bx,-3,32'hffff7ffe,3'b010);
+
+#10 $display("\nsltiu");
+#10 test_bench(32'b001011_00001_00000_1111111111111111,32'bx,-3,32'hfffffffe,3'b010);
+#10 test_bench(32'b001011_00001_00000_0111111111111111,32'bx,-3,32'hffff7ffe,3'b000);
+
+#10 $display("\nsltu");
+#10 test_bench(32'b000000_00001_00000_00000_00000_101011,-1,-3,32'hfffffffe,3'b010);
+#10 test_bench(32'b000000_00001_00000_00000_00000_101011,-3,-1,2,3'b000);
+
+#10 $display("\nlw");
+#10 test_bench(32'b100011_00001_00000_1111111111111111,32'bx,-3,-4,3'b000);
+#10 test_bench(32'b100011_00001_00000_0000000000000011,32'bx,2,5,3'b000);
+
+#10 $display("\nsw");
+#10 test_bench(32'b101011_00001_00000_1111111111111111,32'bx,-3,-4,3'b000);
+#10 test_bench(32'b101011_00001_00000_0000000000000011,32'bx,2,5,3'b000);
+
+#10 $display("\nsll");
+#10 test_bench(32'b000000_00000_00001_00000_00010_000000,32'bx,1,4,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00011_000000,32'bx,32'h111,32'h888,3'b000);
+
+#10 $display("\nsllv");
+#10 test_bench(32'b000000_00000_00001_00000_00000_000100,4,1,16,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_000100,32'he3,32'h111,32'h888,3'b000);
+
+#10 $display("\nsrl");
+#10 test_bench(32'b000000_00000_00001_00000_00010_000010,32'bx,8,2,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00011_000010,32'bx,2,0,3'b000);
+
+#10 $display("\nsrlv");
+#10 test_bench(32'b000000_00000_00001_00000_00000_000110,2,8,2,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_000110,32'he3,8,1,3'b000);
+
+#10 $display("\nsra");
+#10 test_bench(32'b000000_00000_00001_00000_00010_000011,32'bx,8,2,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00100_000011,32'bx,32'hffffff00,32'hfffffff0,3'b000);
+
+#10 $display("\nsrav");
+#10 test_bench(32'b000000_00000_00001_00000_00000_000111,4,32'hf,0,3'b000);
+#10 test_bench(32'b000000_00000_00001_00000_00000_000111,4,32'h80000000,32'hf8000000,3'b000);
+
+
+#10 $finish;
+
+end
 
 endmodule
-
