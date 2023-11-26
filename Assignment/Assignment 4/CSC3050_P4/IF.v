@@ -1,14 +1,16 @@
-// PC register storing next PC values. Here the stall input is used to create a stall
+// PC
 module PC (
     input CLOCK,
     input [31:0] PC_in,
     input Stall,
     output reg [31:0] PC_out
 );
+    // start simulation
     initial begin
-        PC_out = 32'b0;
+        PC_out <= 32'b0;
     end
 
+    // if no stalling
     always@(posedge CLOCK) begin
         if (Stall != 1'b1) begin
             PC_out <= PC_in;
@@ -16,8 +18,7 @@ module PC (
     end
 endmodule
 
-
-// add PC by 4
+// PC_ADD4
 module PC_ADD4 (
     input [31:0] PC_org,
     output wire [31:0] PC_add4
@@ -25,25 +26,32 @@ module PC_ADD4 (
     assign PC_add4 = PC_org + 32'd4;
 endmodule
 
-
+// PC_SRC
 // select for PC_pre. Here the branch, jump, waiting inputs are used to handle branch and jump.
 module PC_SRC (
-    input Branch, 
+    input Branch,
     input Jump,
     input waiting,
     input [5:0] Opcode,
     input [5:0] Funct,
     input [31:0] regA_val,
     input [31:0] regB_val,
+    /* 
+     100 for waiting
+     001 for branch
+     010 for jump
+     011 for jr
+     000 normal add 4
+     */
     output wire [2:0] S
 );
     assign S = bj_S(
-        regA_val, 
-        regB_val, 
-        Jump, 
-        Branch, 
-        Opcode, 
-        Funct, 
+        regA_val,
+        regB_val,
+        Jump,
+        Branch,
+        Opcode,
+        Funct,
         waiting
         );
 
@@ -55,124 +63,54 @@ module PC_SRC (
         input [5:0] Opcode;
         input [5:0] Funct;
         input waiting;
-    begin
-        if (Branch == 1'b1) begin
-            if ((Opcode == 6'b000100 && regA_val == regB_val)
-                || (Opcode == 6'b000101 && regA_val != regB_val))
-            begin
-                if (waiting == 0) begin
-                    bj_S = 3'b001;        
+        begin
+            if (Branch == 1'b1) begin
+                if ((Opcode == 6'b000100 && regA_val == regB_val)
+                    || (Opcode == 6'b000101 && regA_val != regB_val))
+                begin
+                    if (waiting == 0) begin
+                        bj_S = 3'b001;
+                    end
+                    else if (waiting == 1) begin
+                        bj_S = 3'b100;
+                    end
                 end
-                else if (waiting == 1) begin
-                    bj_S = 3'b100;
+                else begin
+                    bj_S = 3'b000;
+                end
+            end
+            else if (Jump == 1'b1) begin
+                if ((Opcode == 6'b000010 )
+                    | (Opcode == 6'b000011 ))
+                begin
+                    if (waiting == 0) begin
+                        bj_S = 3'b010;
+                    end
+                    else if (waiting == 1) begin
+                        bj_S = 3'b100;
+                    end
+                end
+                else if (Opcode == 6'b000000)
+                begin
+                    if (waiting == 0) begin
+                        bj_S = 3'b011;
+                    end
+                    else if (waiting == 1) begin
+                        bj_S = 3'b100;
+                    end
+                end
+                else begin
+                    bj_S = 3'b000;
                 end
             end
             else begin
                 bj_S = 3'b000;
             end
         end
-        else if (Jump == 1'b1) begin
-            if ((Opcode == 6'b000010 )
-                | (Opcode == 6'b000011 ))
-            begin
-                if (waiting == 0) begin
-                    bj_S = 3'b010;        
-                end
-                else if (waiting == 1) begin
-                    bj_S = 3'b100;
-                end
-            end
-            else if (Opcode == 6'b000000)
-            begin
-                if (waiting == 0) begin
-                    bj_S = 3'b011;        
-                end
-                else if (waiting == 1) begin
-                    bj_S = 3'b100;
-                end
-            end
-            else begin
-                bj_S = 3'b000;
-            end
-        end
-        else if (Branch == 1'b0 && Jump == 1'b0) begin
-            bj_S = 3'b000;
-        end
-        else begin
-            bj_S = 3'b000;
-        end
-    end
-    endfunction
-
-endmodule
-
-
-
-// The implementation of some MUX
-// The first one is given as an example,
-// You should implement the others by yourself.
-module MUX2_BIT5 (
-    input [4:0] A0,
-    input [4:0] A1,
-    input S,
-    output [4:0] Y
-);
-    assign Y = Y_out(A0, A1, S);
-    function [4:0] Y_out;
-        input [4:0] A0;
-        input [4:0] A1;
-        input S;
-        case(S)
-        2'b00: Y_out = A0;
-        2'b01: Y_out = A1;
-        endcase
     endfunction
 endmodule
 
-
-module MUX2_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
-endmodule
-
-
-
-module MUX3_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input [31:0] A2,
-    input [1:0] S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, A2, S);
-    function [31:0] Y_out;
-        /* Write your code here */ 
-    endfunction
-endmodule
-
-
-module MUX4_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input [31:0] A2,
-    input [31:0] A3,
-    input [1:0] S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, A2, A3, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
-endmodule
-
-
+// MUX5
 module MUX5_BIT32 (
     input [31:0] A0,
     input [31:0] A1,
@@ -180,16 +118,33 @@ module MUX5_BIT32 (
     input [31:0] A3,
     input [31:0] A4,
     input [2:0] S,
-    output [31:0] Y
+    output reg [31:0] Y
 );
-    assign Y = Y_out(A0, A1, A2, A3, A4, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
+    /* 100 for waiting
+     001 for branch
+     010 for jump
+     011 for jr
+     000 normal add 4
+     */
+     assign Y = Y_out(A0, A1, A2, A3, A4, S);
+     function [31:0] Y_out;
+         input [31:0] A0;
+         input [31:0] A1;
+         input [31:0] A2;
+         input [31:0] A3;
+         input [31:0] A4;
+         input S;
+         case(S)
+            3'b000: Y_out = A0;
+            3'b001: Y_out = A1;
+            3'b010: Y_out = A2;
+            3'b011: Y_out = A3;
+            3'b100: Y_out = A4;
+         endcase
+     endfunction
 endmodule
 
-
-
+// INSTR_MEM
 // The instruction memory: fetch instruction based on PC
 module INSTR_MEM (
     input CLOCK,
@@ -232,7 +187,68 @@ module INSTR_MEM (
             fin_sign = 1;
         end
     end
-
     assign inst_out = RAM[PC_in/4];
+endmodule
 
+
+// MUX2_5
+module MUX2_BIT5 (
+    input [4:0] A0,
+    input [4:0] A1,
+    input S,
+    output [4:0] Y
+);
+    assign Y = Y_out(A0, A1, S);
+    function [4:0] Y_out;
+        input [4:0] A0;
+        input [4:0] A1;
+        input S;
+        case(S)
+            2'b00: Y_out = A0;
+            2'b01: Y_out = A1;
+        endcase
+    endfunction
+endmodule
+
+// MUX2_32
+module MUX2_BIT32 (
+    input [31:0] A0,
+    input [31:0] A1,
+    input S,
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, S);
+    function [31:0] Y_out;
+        /* Write your code here */
+    endfunction
+endmodule
+
+
+// MUX3
+module MUX3_BIT32 (
+    input [31:0] A0,
+    input [31:0] A1,
+    input [31:0] A2,
+    input [1:0] S,
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, A2, S);
+    function [31:0] Y_out;
+        /* Write your code here */
+    endfunction
+endmodule
+
+// MUX4
+module MUX4_BIT32 (
+    input [31:0] A0,
+    input [31:0] A1,
+    input [31:0] A2,
+    input [31:0] A3,
+    input [1:0] S,
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, A2, A3, S);
+    function [31:0] Y_out;
+        /* Write your code here */
+    endfunction
 endmodule

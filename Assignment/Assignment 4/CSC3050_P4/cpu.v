@@ -89,14 +89,46 @@ module CPU (
 
     wire waiting;
 
-
-    /* modules */
+    // linking
+    // IF
+    // PC
     PC pc(
         .CLOCK (CLOCK), 
         .PC_in (PC_pre),
         .Stall (Stall_F),
         .PC_out (PC_F)
     );
+
+    // PC_ADD4
+    PC_ADD4 pc_add4(
+        .PC_org (PC_F),
+        .PC_add4 (PC_add4_F)
+    );
+
+    // PC_SRC
+    PC_SRC pc_src(
+        .Branch (Branch_D),
+        .Jump(Jump_D),
+        .Opcode (Opcode_D),
+        .Funct (Funct_D),
+        .waiting (waiting),
+        .regA_val (regA_val_D),
+        .regB_val (regB_val_D),
+        .S (PC_Src_S)
+    );
+
+    // MUX5
+    MUX5_BIT32 mux5_bit32_1(
+        .A0 (PC_add4_F),
+        .A1 (PC_branch_D),
+        .A2 (PC_jump_D),
+        .A3 (regA_val_D),
+        .A4 (PC_add4_D - 4),
+        .S (PC_Src_S),
+        .Y (PC_pre)
+    );
+
+    // INSTR_MEM
     INSTR_MEM mem(
         .CLOCK (CLOCK),
         .PC_in (PC_F),
@@ -104,22 +136,22 @@ module CPU (
         .inst_out (inst_F)
     );
 
-    PC_ADD4 pc_add4(
-        .PC_org (PC_F), 
-        .PC_add4 (PC_add4_F)
-    );
-    
+
+
+    // ID
+    // IF_ID
     IF_ID if_id(
         .CLOCK (CLOCK), 
         .inst_in (inst_F), 
         .PC_add4_in (PC_add4_F),
+        .branch_PC (PC_branch_D),  // check
         .Flush (Flush_D),
         .Stall (Stall_D),
         .inst_out (inst_D),
         .PC_add4_out (PC_add4_D)
     );
 
-    /* 1 decode area modules */
+    // CONTROL_UNIT
     CONTROL_UNIT control_unit(
         .opcode_in (inst_D[31:26]), 
         .funct_in (inst_D[5:0]),
@@ -133,6 +165,8 @@ module CPU (
         .ALUSrc_out (ALUSrc_D), 
         .RegDst_out (RegDst_D)
     );
+
+    // REG_FILE
     REG_FILE reg_file(
         .CLOCK (CLOCK), 
         .RegWrite (RegWrite_W),
@@ -287,25 +321,9 @@ module CPU (
         .S (MemtoReg_W), 
         .Y (Result_W)
     );
-    PC_SRC pc_src(
-        .Branch (Branch_D),
-        .Jump(Jump_D),
-        .Opcode (Opcode_D),
-        .Funct (Funct_D),
-        .waiting (waiting),
-        .regA_val (regA_val_D),
-        .regB_val (regB_val_D),
-        .S (PC_Src_S)
-    );
-    MUX5_BIT32 mux5_bit32_1(
-        .A0 (PC_add4_F),
-        .A1 (PC_branch_D),
-        .A2 (PC_jump_D),
-        .A3 (regA_val_D),
-        .A4 (PC_add4_D - 4),
-        .S (PC_Src_S),
-        .Y (PC_pre)
-    );
+
+
+
 
     HAZARD_UNIT hazard_unit(
         .Opcode_D (Opcode_D),
