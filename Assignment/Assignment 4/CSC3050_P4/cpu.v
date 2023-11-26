@@ -1,7 +1,5 @@
 // CLK: input clock signal
 
-
-
 module CPU (
     input CLK
 );
