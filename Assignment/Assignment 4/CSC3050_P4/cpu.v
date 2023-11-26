@@ -180,23 +180,31 @@ module CPU (
         .regA_data (regA_val_D), 
         .regB_data (regB_val_D)
     );
+
+    // SIGN_EXT
     SIGN_EXT sign_ext(
         .imme_in (inst_D[15:0]), 
         .se_imme_out (se_imme_D)
     );
+
+    // BRANCH_GEN
     BRANCH_GEN branch_gen(
         .se_imme_in (se_imme_D),
         .PC_add4_in (PC_add4_D),
         .branch_out (PC_branch_D)
     );
+
+    // JUMP_GEN
     JUMP_GEN jump_gen(
         .addr_in (inst_D[25:0]),
         .PC_add4_in (PC_add4_D),
         .jump_out (PC_jump_D)
     );
+
+    // ID_EX
     ID_EX id_ex(
         .CLOCK (CLOCK),
-        /* control unit input */
+        /* input from CONTROL_UNIT */
         .RegWrite_in (RegWrite_D), 
         .MemtoReg_in (MemtoReg_D),
         .MemWrite_in (MemWrite_D),
@@ -204,9 +212,10 @@ module CPU (
         .Funct_in (Funct_D),
         .ALUSrc_in (ALUSrc_D), 
         .RegDst_in (RegDst_D), 
-        /* register input */
+        /* input from REG_FILE */
         .regA_data_in (regA_val_D), 
         .regB_data_in (regB_val_D),
+        /* input from inst_D */
         .Rs_in (Rs_D), 
         .Rt_in (Rt_D), 
         .Rd_in (Rd_D), 
@@ -232,6 +241,19 @@ module CPU (
         /* others output */
         .se_imme_out (se_imme_E)
     );
+
+    // ALU
+    ALU alu(
+        .SrcA (SrcA_E),
+        .SrcB (SrcB_E), 
+        .SrcC (Sa_E), 
+        .Opcode (Opcode_E), 
+        .Funct (Funct_E),
+        .result (ALUOut_E), 
+        .zero (ALUZero_E),
+        .neg (ALUNeg_E)
+    );
+
     MUX3_BIT32 mux3_bit32_2(
         .A0 (regA_val_E), 
         .A1 (ALUOut_M), 
@@ -258,16 +280,8 @@ module CPU (
         .S (RegDst_E), 
         .Y (WriteReg_E)
     );
-    ALU alu(
-        .SrcA (SrcA_E),
-        .SrcB (SrcB_E), 
-        .SrcC (Sa_E), 
-        .Opcode (Opcode_E), 
-        .Funct (Funct_E),
-        .result (ALUOut_E), 
-        .zero (ALUZero_E),
-        .neg (ALUNeg_E)
-    );
+
+    
     
     EX_MEM ex_mem(
         .CLOCK (CLOCK),

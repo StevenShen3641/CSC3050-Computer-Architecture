@@ -15,6 +15,7 @@ module IF_ID (
             inst_out = inst_in;
             PC_add4_out = PC_add4_in;
         end
+        // flush
         if (Flush == 1'b1) begin
             inst_out = 32'b0;
             PC_add4_out = branch_PC;  // check
@@ -124,12 +125,14 @@ module REG_FILE (
     assign regA_data = simu_register[regA_addr];
     assign regB_data = simu_register[regB_addr];
 
+    // write
     always@(posedge CLOCK, regD_data) begin
         if (RegWrite == 1'b1) begin
             simu_register[regD_addr] = regD_data;
         end
     end
 
+    // jal
     always@(Jump_D, Opcode_D) begin
         if (Jump_D == 1'b1 && Opcode_D == 6'b000011)
         begin
@@ -138,9 +141,7 @@ module REG_FILE (
     end
 endmodule
 
-
-
-// Sign extention
+// SIGN_EXT
 module SIGN_EXT (
     input [15:0] imme_in,
     output wire [31:0] se_imme_out
@@ -148,21 +149,20 @@ module SIGN_EXT (
     assign se_imme_out = $signed(imme_in);
 endmodule
 
-
-// Generating jump address
-module JUMP_GEN (
-    input [25:0] addr_in,
-    input [31:0] PC_add4_in,
-    output [31:0] jump_out
-);
-    assign jump_out = {PC_add4_in[31:28], 28'b0} + ({6'b0,addr_in})*4 ;
-endmodule
-
-// Generating branch address
+// BRANCH_GEN
 module BRANCH_GEN (
     input [31:0] se_imme_in,
     input [31:0] PC_add4_in,
     output [31:0] branch_out
 );
     assign branch_out = PC_add4_in + se_imme_in*4;
+endmodule
+
+// JUMP_GEN
+module JUMP_GEN (
+    input [25:0] addr_in,
+    input [31:0] PC_add4_in,
+    output [31:0] jump_out
+);
+    assign jump_out = {PC_add4_in[31:28], 28'b0} + ({6'b0,addr_in})*4 ;
 endmodule

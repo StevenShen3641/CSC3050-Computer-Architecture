@@ -110,7 +110,7 @@ module PC_SRC (
     endfunction
 endmodule
 
-// MUX5
+// MUX5: Choose PC_pre from add4, branch, jump, jr or waiting.
 module MUX5_BIT32 (
     input [31:0] A0,
     input [31:0] A1,
@@ -191,24 +191,7 @@ module INSTR_MEM (
 endmodule
 
 
-// MUX2_5
-module MUX2_BIT5 (
-    input [4:0] A0,
-    input [4:0] A1,
-    input S,
-    output [4:0] Y
-);
-    assign Y = Y_out(A0, A1, S);
-    function [4:0] Y_out;
-        input [4:0] A0;
-        input [4:0] A1;
-        input S;
-        case(S)
-            2'b00: Y_out = A0;
-            2'b01: Y_out = A1;
-        endcase
-    endfunction
-endmodule
+
 
 // MUX2_32
 module MUX2_BIT32 (
