@@ -190,7 +190,7 @@ module ALU (
     endfunction
 endmodule
 
-// MUX2_5: Choose 
+// MUX2_5: Choose writeReg to be rt or rd.
 module MUX2_BIT5 (
     input [4:0] A0,
     input [4:0] A1,
@@ -203,8 +203,60 @@ module MUX2_BIT5 (
         input [4:0] A1;
         input S;
         case(S)
+            1'b0: Y_out = A0;
+            1'b1: Y_out = A1;
+        endcase
+    endfunction
+endmodule
+
+// MUX2_32: Choose SrcB_E to be SrcB intermediate or signed immediate.
+// Also used in WB, choose Result_W to be ALU result or read data from memory.
+module MUX2_BIT32 (
+    input [31:0] A0,
+    input [31:0] A1,
+    /* 
+     0 for SrcB intermediate
+     1 for signed immediate
+     */
+    input S,
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, S);
+    function [31:0] Y_out;
+        input [31:0] A0,
+        input [31:0] A1,
+        input S,
+        case(s)
+            1'b0: Y_out = A0;
+            1'b1: Y_out = A1;
+        endcase
+    endfunction
+endmodule
+
+// MUX3: Choose intermediate result to be register value, 
+// ALU forwarding result or forwarding write back result.
+module MUX3_BIT32 (
+    input [31:0] A0,
+    input [31:0] A1,
+    input [31:0] A2,
+    /* 
+     00 for register
+     01 ALU result
+     10 for write back result
+     */
+    input [1:0] S,
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, A2, S);
+    function [31:0] Y_out;
+        input [31:0] A0,
+        input [31:0] A1,
+        input [31:0] A2,
+        input [1:0] S,
+        case(S)
             2'b00: Y_out = A0;
             2'b01: Y_out = A1;
+            2'b10: Y_out = A2;
         endcase
     endfunction
 endmodule

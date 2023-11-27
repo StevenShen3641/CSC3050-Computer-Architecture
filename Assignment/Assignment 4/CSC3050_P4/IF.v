@@ -120,7 +120,8 @@ module MUX5_BIT32 (
     input [2:0] S,
     output reg [31:0] Y
 );
-    /* 100 for waiting
+    /* 
+     100 for waiting
      001 for branch
      010 for jump
      011 for jr
@@ -193,33 +194,8 @@ endmodule
 
 
 
-// MUX2_32
-module MUX2_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
-endmodule
 
 
-// MUX3
-module MUX3_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input [31:0] A2,
-    input [1:0] S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, A2, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
-endmodule
 
 // MUX4
 module MUX4_BIT32 (

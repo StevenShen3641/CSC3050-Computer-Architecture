@@ -201,6 +201,7 @@ module CPU (
         .jump_out (PC_jump_D)
     );
 
+    // EX
     // ID_EX
     ID_EX id_ex(
         .CLOCK (CLOCK),
@@ -254,26 +255,7 @@ module CPU (
         .neg (ALUNeg_E)
     );
 
-    MUX3_BIT32 mux3_bit32_2(
-        .A0 (regA_val_E), 
-        .A1 (ALUOut_M), 
-        .A2 (Result_W), 
-        .S (ForwardA_E), 
-        .Y (SrcA_E)
-    );
-    MUX3_BIT32 mux3_bit32_3(
-        .A0 (regB_val_E), 
-        .A1 (ALUOut_M), 
-        .A2 (Result_W), 
-        .S (ForwardB_E), 
-        .Y (SrcB_inter_E)
-    );
-    MUX2_BIT32 mux2_bit32_1(
-        .A0 (SrcB_inter_E), 
-        .A1 (se_imme_E), 
-        .S (ALUSrc_E), 
-        .Y (SrcB_E)
-    );
+    // MUX2_5
     MUX2_BIT5 mux2_bit5_1(
         .A0 (Rt_E),
         .A1 (Rd_E), 
@@ -281,8 +263,34 @@ module CPU (
         .Y (WriteReg_E)
     );
 
+    // MUX2_32
+    MUX2_BIT32 mux2_bit32_1(
+        .A0 (SrcB_inter_E), 
+        .A1 (se_imme_E), 
+        .S (ALUSrc_E), 
+        .Y (SrcB_E)
+    );
+
+    // MUX3_32
+    MUX3_BIT32 mux3_bit32_1(
+        .A0 (regA_val_E), 
+        .A1 (ALUOut_M), 
+        .A2 (Result_W), 
+        .S (ForwardA_E), 
+        .Y (SrcA_E)
+    );
+    MUX3_BIT32 mux3_bit32_2(
+        .A0 (regB_val_E), 
+        .A1 (ALUOut_M), 
+        .A2 (Result_W), 
+        .S (ForwardB_E), 
+        .Y (SrcB_inter_E)
+    );
     
     
+
+    // EX
+    // EX_MEM
     EX_MEM ex_mem(
         .CLOCK (CLOCK),
         /* input */
@@ -305,6 +313,7 @@ module CPU (
         .WriteReg_out (WriteReg_M)
     );
 
+    // DATA_MEM
     DATA_MEM data_mem(
         .CLOCK (CLOCK),
         .MemWrite (MemWrite_M),
@@ -314,6 +323,8 @@ module CPU (
         .ReadData_out (ReadData_M)
     );
     
+    // WB
+    // MEM_WB
     MEM_WB mem_wb(
         .CLOCK(CLOCK),
         /* inputs */
@@ -329,6 +340,8 @@ module CPU (
         .ReadData_out (ReadData_W), 
         .WriteReg_out (WriteReg_W)
     );
+
+    // MUX2_32
     MUX2_BIT32 mux2_bit32_2(
         .A0 (ALUOut_W),
         .A1 (ReadData_W), 
