@@ -168,7 +168,7 @@ module CPU (
 
     // REG_FILE
     REG_FILE reg_file(
-        .CLOCK (CLOCK), 
+        .CLOCK (CLOCK),
         .RegWrite (RegWrite_W),
         .regA_addr (inst_D[25:21]), 
         .regB_addr (inst_D[20:16]),

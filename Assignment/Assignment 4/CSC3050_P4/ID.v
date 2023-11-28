@@ -12,13 +12,13 @@ module IF_ID (
     always@(posedge CLOCK) begin
         // if no stalling
         if (Stall != 1'b1 && Flush == 1'b0) begin
-            inst_out = inst_in;
-            PC_add4_out = PC_add4_in;
+            inst_out <= inst_in;
+            PC_add4_out <= PC_add4_in;
         end
         // flush
         if (Flush == 1'b1) begin
-            inst_out = 32'b0;
-            PC_add4_out = branch_PC;  // check
+            inst_out <= 32'b0;
+            PC_add4_out <= branch_PC;  // check
         end
     end
 endmodule
@@ -37,6 +37,7 @@ module CONTROL_UNIT (
     output wire ALUSrc_out,
     output wire RegDst_out
 );
+    
     // R-type
     wire R_add = (opcode_in == 6'b000000 && funct_in == 6'b100000) ? 1 : 0;
     wire R_addu = (opcode_in == 6'b000000 && funct_in == 6'b100001) ? 1 : 0;
@@ -95,7 +96,7 @@ module CONTROL_UNIT (
     assign RegDst_out = ~ (
         I_addi | I_addiu | I_andi | I_ori |
         I_xori | I_lw | I_sw
-        ) ? 1 : 0; 
+        ) ? 1 : 0;
 endmodule
 
 
@@ -131,6 +132,13 @@ module REG_FILE (
             simu_register[regD_addr] = regD_data;
         end
     end
+    // always@(posedge CLOCK) begin
+    //     $display("CLK");
+    // end
+    // always@(PC_pre) begin
+    //     $display("PC_pre");
+    //     $display(PC_pre);
+    // end
 
     // jal
     always@(Jump_D, Opcode_D) begin

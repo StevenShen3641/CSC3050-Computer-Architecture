@@ -118,8 +118,6 @@ module MUX5_BIT32 (
     input [31:0] A3,
     input [31:0] A4,
     input [2:0] S,
-    output [31:0] Y
-);
     /* 
      100 for waiting
      001 for branch
@@ -127,22 +125,24 @@ module MUX5_BIT32 (
      011 for jr
      000 normal add 4
      */
-     assign Y = Y_out(A0, A1, A2, A3, A4, S);
-     function [31:0] Y_out;
-         input [31:0] A0;
-         input [31:0] A1;
-         input [31:0] A2;
-         input [31:0] A3;
-         input [31:0] A4;
-         input S;
-         case(S)
+    output [31:0] Y
+);
+    assign Y = Y_out(A0, A1, A2, A3, A4, S);
+    function [31:0] Y_out;
+        input [31:0] A0;
+        input [31:0] A1;
+        input [31:0] A2;
+        input [31:0] A3;
+        input [31:0] A4;
+        input [2:0] S;
+        case(S)
             3'b000: Y_out = A0;
             3'b001: Y_out = A1;
             3'b010: Y_out = A2;
             3'b011: Y_out = A3;
             3'b100: Y_out = A4;
-         endcase
-     endfunction
+        endcase
+    endfunction
 endmodule
 
 // INSTR_MEM

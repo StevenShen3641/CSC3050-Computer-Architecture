@@ -15,8 +15,15 @@ module cpu_test ();
         clock = 0;
     end
 
+    initial
+    begin
+        $dumpfile("wave.vcd"); //生成的vcd文件名称
+        $dumpvars(0, cpu_test); //tb模块名称
+    end
+
     always begin
         #(time_period / 2) clock = ~clock;
     end
+
 
 endmodule

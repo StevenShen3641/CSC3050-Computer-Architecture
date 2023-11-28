@@ -42,33 +42,33 @@ module ID_EX (
     output reg [31:0] se_imme_out
 );
     always@(posedge CLOCK) begin
-        regA_data_out = regA_data_in;
-        regB_data_out = regB_data_in;
-        Rs_out = Rs_in;
-        Rt_out = Rt_in;
-        Rd_out = Rd_in;
-        Sa_out = Sa_in;
-        se_imme_out = se_imme_in;
+        regA_data_out <= regA_data_in;
+        regB_data_out <= regB_data_in;
+        Rs_out <= Rs_in;
+        Rt_out <= Rt_in;
+        Rd_out <= Rd_in;
+        Sa_out <= Sa_in;
+        se_imme_out <= se_imme_in;
         // flush
         if (Flush == 1'b1) begin
             /* control unit output */
-            RegWrite_out = 1'b0;
-            MemtoReg_out = 1'b0;
-            MemWrite_out = 1'b0;
-            Opcode_out = 6'b0;
-            Funct_out = 6'b0;
-            ALUSrc_out = 1'b0;
-            RegDst_out = 1'b0;
+            RegWrite_out <= 1'b0;
+            MemtoReg_out <= 1'b0;
+            MemWrite_out <= 1'b0;
+            Opcode_out <= 6'b0;
+            Funct_out <= 6'b0;
+            ALUSrc_out <= 1'b0;
+            RegDst_out <= 1'b0;
         end
         else begin
             /* control unit output */
-            RegWrite_out = RegWrite_in;
-            MemtoReg_out = MemtoReg_in;
-            MemWrite_out = MemWrite_in;
-            Opcode_out = Opcode_in;
-            Funct_out = Funct_in;
-            ALUSrc_out = ALUSrc_in;
-            RegDst_out = RegDst_in;
+            RegWrite_out <= RegWrite_in;
+            MemtoReg_out <= MemtoReg_in;
+            MemWrite_out <= MemWrite_in;
+            Opcode_out <= Opcode_in;
+            Funct_out <= Funct_in;
+            ALUSrc_out <= ALUSrc_in;
+            RegDst_out <= RegDst_in;
         end
 
     end
