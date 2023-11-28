@@ -1,7 +1,5 @@
 // CLK: input clock signal
 
-
-
 module CPU (
     input CLK
 );
@@ -91,14 +89,46 @@ module CPU (
 
     wire waiting;
 
-
-    /* modules */
+    // linking
+    // IF
+    // PC
     PC pc(
         .CLOCK (CLOCK), 
         .PC_in (PC_pre),
         .Stall (Stall_F),
         .PC_out (PC_F)
     );
+
+    // PC_ADD4
+    PC_ADD4 pc_add4(
+        .PC_org (PC_F),
+        .PC_add4 (PC_add4_F)
+    );
+
+    // PC_SRC
+    PC_SRC pc_src(
+        .Branch (Branch_D),
+        .Jump(Jump_D),
+        .Opcode (Opcode_D),
+        .Funct (Funct_D),
+        .waiting (waiting),
+        .regA_val (regA_val_D),
+        .regB_val (regB_val_D),
+        .S (PC_Src_S)
+    );
+
+    // MUX5
+    MUX5_BIT32 mux5_bit32_1(
+        .A0 (PC_add4_F),
+        .A1 (PC_branch_D),
+        .A2 (PC_jump_D),
+        .A3 (regA_val_D),
+        .A4 (PC_add4_D - 4),
+        .S (PC_Src_S),
+        .Y (PC_pre)
+    );
+
+    // INSTR_MEM
     INSTR_MEM mem(
         .CLOCK (CLOCK),
         .PC_in (PC_F),
@@ -106,22 +136,22 @@ module CPU (
         .inst_out (inst_F)
     );
 
-    PC_ADD4 pc_add4(
-        .PC_org (PC_F), 
-        .PC_add4 (PC_add4_F)
-    );
-    
+
+
+    // ID
+    // IF_ID
     IF_ID if_id(
         .CLOCK (CLOCK), 
         .inst_in (inst_F), 
         .PC_add4_in (PC_add4_F),
+        .branch_PC (PC_branch_D),  // check
         .Flush (Flush_D),
         .Stall (Stall_D),
         .inst_out (inst_D),
         .PC_add4_out (PC_add4_D)
     );
 
-    /* 1 decode area modules */
+    // CONTROL_UNIT
     CONTROL_UNIT control_unit(
         .opcode_in (inst_D[31:26]), 
         .funct_in (inst_D[5:0]),
@@ -135,6 +165,8 @@ module CPU (
         .ALUSrc_out (ALUSrc_D), 
         .RegDst_out (RegDst_D)
     );
+
+    // REG_FILE
     REG_FILE reg_file(
         .CLOCK (CLOCK), 
         .RegWrite (RegWrite_W),
@@ -148,23 +180,32 @@ module CPU (
         .regA_data (regA_val_D), 
         .regB_data (regB_val_D)
     );
+
+    // SIGN_EXT
     SIGN_EXT sign_ext(
         .imme_in (inst_D[15:0]), 
         .se_imme_out (se_imme_D)
     );
+
+    // BRANCH_GEN
     BRANCH_GEN branch_gen(
         .se_imme_in (se_imme_D),
         .PC_add4_in (PC_add4_D),
         .branch_out (PC_branch_D)
     );
+
+    // JUMP_GEN
     JUMP_GEN jump_gen(
         .addr_in (inst_D[25:0]),
         .PC_add4_in (PC_add4_D),
         .jump_out (PC_jump_D)
     );
+
+    // EX
+    // ID_EX
     ID_EX id_ex(
         .CLOCK (CLOCK),
-        /* control unit input */
+        /* input from CONTROL_UNIT */
         .RegWrite_in (RegWrite_D), 
         .MemtoReg_in (MemtoReg_D),
         .MemWrite_in (MemWrite_D),
@@ -172,9 +213,10 @@ module CPU (
         .Funct_in (Funct_D),
         .ALUSrc_in (ALUSrc_D), 
         .RegDst_in (RegDst_D), 
-        /* register input */
+        /* input from REG_FILE */
         .regA_data_in (regA_val_D), 
         .regB_data_in (regB_val_D),
+        /* input from inst_D */
         .Rs_in (Rs_D), 
         .Rt_in (Rt_D), 
         .Rd_in (Rd_D), 
@@ -200,32 +242,8 @@ module CPU (
         /* others output */
         .se_imme_out (se_imme_E)
     );
-    MUX3_BIT32 mux3_bit32_2(
-        .A0 (regA_val_E), 
-        .A1 (ALUOut_M), 
-        .A2 (Result_W), 
-        .S (ForwardA_E), 
-        .Y (SrcA_E)
-    );
-    MUX3_BIT32 mux3_bit32_3(
-        .A0 (regB_val_E), 
-        .A1 (ALUOut_M), 
-        .A2 (Result_W), 
-        .S (ForwardB_E), 
-        .Y (SrcB_inter_E)
-    );
-    MUX2_BIT32 mux2_bit32_1(
-        .A0 (SrcB_inter_E), 
-        .A1 (se_imme_E), 
-        .S (ALUSrc_E), 
-        .Y (SrcB_E)
-    );
-    MUX2_BIT5 mux2_bit5_1(
-        .A0 (Rt_E),
-        .A1 (Rd_E), 
-        .S (RegDst_E), 
-        .Y (WriteReg_E)
-    );
+
+    // ALU
     ALU alu(
         .SrcA (SrcA_E),
         .SrcB (SrcB_E), 
@@ -236,7 +254,43 @@ module CPU (
         .zero (ALUZero_E),
         .neg (ALUNeg_E)
     );
+
+    // MUX2_5
+    MUX2_BIT5 mux2_bit5_1(
+        .A0 (Rt_E),
+        .A1 (Rd_E), 
+        .S (RegDst_E), 
+        .Y (WriteReg_E)
+    );
+
+    // MUX2_32
+    MUX2_BIT32 mux2_bit32_1(
+        .A0 (SrcB_inter_E), 
+        .A1 (se_imme_E), 
+        .S (ALUSrc_E), 
+        .Y (SrcB_E)
+    );
+
+    // MUX3_32
+    MUX3_BIT32 mux3_bit32_1(
+        .A0 (regA_val_E), 
+        .A1 (ALUOut_M), 
+        .A2 (Result_W), 
+        .S (ForwardA_E), 
+        .Y (SrcA_E)
+    );
+    MUX3_BIT32 mux3_bit32_2(
+        .A0 (regB_val_E), 
+        .A1 (ALUOut_M), 
+        .A2 (Result_W), 
+        .S (ForwardB_E), 
+        .Y (SrcB_inter_E)
+    );
     
+    
+
+    // EX
+    // EX_MEM
     EX_MEM ex_mem(
         .CLOCK (CLOCK),
         /* input */
@@ -259,6 +313,7 @@ module CPU (
         .WriteReg_out (WriteReg_M)
     );
 
+    // DATA_MEM
     DATA_MEM data_mem(
         .CLOCK (CLOCK),
         .MemWrite (MemWrite_M),
@@ -268,6 +323,8 @@ module CPU (
         .ReadData_out (ReadData_M)
     );
     
+    // WB
+    // MEM_WB
     MEM_WB mem_wb(
         .CLOCK(CLOCK),
         /* inputs */
@@ -283,31 +340,17 @@ module CPU (
         .ReadData_out (ReadData_W), 
         .WriteReg_out (WriteReg_W)
     );
+
+    // MUX2_32
     MUX2_BIT32 mux2_bit32_2(
         .A0 (ALUOut_W),
         .A1 (ReadData_W), 
         .S (MemtoReg_W), 
         .Y (Result_W)
     );
-    PC_SRC pc_src(
-        .Branch (Branch_D),
-        .Jump(Jump_D),
-        .Opcode (Opcode_D),
-        .Funct (Funct_D),
-        .waiting (waiting),
-        .regA_val (regA_val_D),
-        .regB_val (regB_val_D),
-        .S (PC_Src_S)
-    );
-    MUX5_BIT32 mux5_bit32_1(
-        .A0 (PC_add4_F),
-        .A1 (PC_branch_D),
-        .A2 (PC_jump_D),
-        .A3 (regA_val_D),
-        .A4 (PC_add4_D - 4),
-        .S (PC_Src_S),
-        .Y (PC_pre)
-    );
+
+
+
 
     HAZARD_UNIT hazard_unit(
         .Opcode_D (Opcode_D),

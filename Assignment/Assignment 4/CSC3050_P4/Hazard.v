@@ -48,7 +48,7 @@ module HAZARD_UNIT (
     
     assign Flush_D = (PC_Src_S != 3'b000) ? 1 :0;
 
-    assign waiting = (((waiting_for_A | waiting_for_B)) != 2'b0) ? 1: 0;
+    assign waiting = (((waiting_for_A | waiting_for_B)) != 2'b0) ? 1 : 0;
 
     assign ForwardA_E = Forward_E(
         RegWrite_M, 

@@ -1,11 +1,9 @@
 module test_alu();
-    reg [31:0] d, e;
-    reg [31:0] c;
+    reg [15:0] d;
+    reg [31:0] e;
     initial begin
-        d = 32'b11111111_11111111_10000000_00000000;
-        e = 32'b01111111_11111111_11111111_11111111;
-        if ($signed(e) < $signed(d))
-            c = 1;
-        $display(c);
+        d = 59904;
+        e = $signed(d);
+        $display(e[15:0]);
     end
 endmodule

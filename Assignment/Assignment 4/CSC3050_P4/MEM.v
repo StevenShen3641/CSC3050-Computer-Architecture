@@ -1,11 +1,11 @@
 // The EX_MEM register, you need to do some implementation here
 module EX_MEM (
     input CLOCK,
-    /* control unit input */
+    /* input from CONTROL_UNIT */
     input RegWrite_in,
     input MemtoReg_in,
     input MemWrite_in,
-    /* ALU input */
+    /* input from ALU */
     input ALUZero_in,
     input ALUNeg_in,
     input [31:0] ALUOut_in,
@@ -26,7 +26,17 @@ module EX_MEM (
     output reg [4:0] WriteReg_out
 );
     always@(posedge CLOCK) begin
-        /* Write your code here */
+        /* input from CONTROL_UNIT */
+        RegWrite_in = RegWrite_out;
+        MemtoReg_in = MemtoReg_out;
+        MemWrite_in = MemWrite_out;
+        /* input from ALU */
+        ALUZero_in = ALUZero_out;
+        ALUNeg_in = ALUNeg_out;
+        ALUOut_in = ALUOut_out;
+        /* others input */
+        WriteData_in = WriteData_out;
+        WriteReg_in = WriteReg_out;
 
     end
 endmodule

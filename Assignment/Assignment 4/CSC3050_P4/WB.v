@@ -1,7 +1,7 @@
 // The MEM_WB register, you need to do some implementation here
 module MEM_WB (
     input CLOCK,
-    /* control unit input (2) */
+    /* input from CONTROL_UNIT */
     input RegWrite_in,
     input MemtoReg_in,
     /* others (3) */
@@ -18,7 +18,12 @@ module MEM_WB (
     output reg [4:0] WriteReg_out
 );
     always@(posedge CLOCK) begin
-        /* Write your code here */
-        
+        /* input from CONTROL_UNIT */
+        RegWrite_in = RegWrite_out;
+        MemtoReg_in = MemtoReg_out;
+        /* others (3) */
+        ALUOut_in = ALUOut_out;
+        ReadData_in = ReadData_out;
+        WriteReg_in = WriteReg_out;
     end
 endmodule
