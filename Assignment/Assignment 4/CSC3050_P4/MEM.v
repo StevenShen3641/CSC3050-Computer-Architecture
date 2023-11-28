@@ -27,16 +27,16 @@ module EX_MEM (
 );
     always@(posedge CLOCK) begin
         /* input from CONTROL_UNIT */
-        RegWrite_in = RegWrite_out;
-        MemtoReg_in = MemtoReg_out;
-        MemWrite_in = MemWrite_out;
+        RegWrite_out = RegWrite_in;
+        MemtoReg_out = MemtoReg_in;
+        MemWrite_out = MemWrite_in;
         /* input from ALU */
-        ALUZero_in = ALUZero_out;
-        ALUNeg_in = ALUNeg_out;
-        ALUOut_in = ALUOut_out;
+        ALUZero_out = ALUZero_in;
+        ALUNeg_out = ALUNeg_in;
+        ALUOut_out = ALUOut_in;
         /* others input */
-        WriteData_in = WriteData_out;
-        WriteReg_in = WriteReg_out;
+        WriteData_out = WriteData_in;
+        WriteReg_out = WriteReg_in;
 
     end
 endmodule

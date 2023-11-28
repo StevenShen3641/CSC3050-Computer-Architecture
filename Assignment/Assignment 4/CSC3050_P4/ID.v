@@ -3,7 +3,7 @@ module IF_ID (
     input CLOCK,
     input [31:0] inst_in,
     input [31:0] PC_add4_in,
-    input [31:0] branch_PC  // check
+    input [31:0] branch_PC,  // check
     input Flush,
     input Stall,
     output reg [31:0] inst_out,

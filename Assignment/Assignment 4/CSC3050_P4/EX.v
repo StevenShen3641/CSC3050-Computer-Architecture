@@ -130,11 +130,11 @@ module ALU (
                             end
                             else if ($signed(SrcA-SrcB) < 0) begin
                                 neg = 1'b1;
-                                result = 32'b1;
+                                result_out = 32'b1;
                             end
                             else begin
                                 neg = 1'b0;
-                                result = 32'b0;
+                                result_out = 32'b0;
                             end
                         end
                         6'h03:  // sra
@@ -180,7 +180,7 @@ module ALU (
                     result_out = SrcA+SrcB;
                 6'h0D:  // ori
                     result_out = SrcA | {16'b0, SrcB[15:0]};
-                6'h2B: // sw
+                6'h2B:  // sw
                     result_out = SrcA+SrcB;
                 6'h0E:  // xori
                     result_out = SrcA ^ {16'b0, SrcB[15:0]};
@@ -223,10 +223,10 @@ module MUX2_BIT32 (
 );
     assign Y = Y_out(A0, A1, S);
     function [31:0] Y_out;
-        input [31:0] A0,
-        input [31:0] A1,
-        input S,
-        case(s)
+        input [31:0] A0;
+        input [31:0] A1;
+        input S;
+        case(S)
             1'b0: Y_out = A0;
             1'b1: Y_out = A1;
         endcase
@@ -249,10 +249,10 @@ module MUX3_BIT32 (
 );
     assign Y = Y_out(A0, A1, A2, S);
     function [31:0] Y_out;
-        input [31:0] A0,
-        input [31:0] A1,
-        input [31:0] A2,
-        input [1:0] S,
+        input [31:0] A0;
+        input [31:0] A1;
+        input [31:0] A2;
+        input [1:0] S;
         case(S)
             2'b00: Y_out = A0;
             2'b01: Y_out = A1;

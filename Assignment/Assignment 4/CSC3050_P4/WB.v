@@ -19,11 +19,11 @@ module MEM_WB (
 );
     always@(posedge CLOCK) begin
         /* input from CONTROL_UNIT */
-        RegWrite_in = RegWrite_out;
-        MemtoReg_in = MemtoReg_out;
+        RegWrite_out = RegWrite_in;
+        MemtoReg_out = MemtoReg_in;
         /* others (3) */
-        ALUOut_in = ALUOut_out;
-        ReadData_in = ReadData_out;
-        WriteReg_in = WriteReg_out;
+        ALUOut_out = ALUOut_in;
+        ReadData_out = ReadData_in;
+        WriteReg_out = WriteReg_in;
     end
 endmodule

@@ -118,7 +118,7 @@ module MUX5_BIT32 (
     input [31:0] A3,
     input [31:0] A4,
     input [2:0] S,
-    output reg [31:0] Y
+    output [31:0] Y
 );
     /* 
      100 for waiting
@@ -174,9 +174,9 @@ module INSTR_MEM (
         if (!(RAM[PC_in/4] != 32'hffffffff && change_sign == 0)) begin
             change_sign = 1;
         end
-        else begin
+        // else begin
 
-        end
+        // end
     end
 
     // finish help part
@@ -198,16 +198,16 @@ endmodule
 
 
 // MUX4
-module MUX4_BIT32 (
-    input [31:0] A0,
-    input [31:0] A1,
-    input [31:0] A2,
-    input [31:0] A3,
-    input [1:0] S,
-    output [31:0] Y
-);
-    assign Y = Y_out(A0, A1, A2, A3, S);
-    function [31:0] Y_out;
-        /* Write your code here */
-    endfunction
-endmodule
+// module MUX4_BIT32 (
+//     input [31:0] A0,
+//     input [31:0] A1,
+//     input [31:0] A2,
+//     input [31:0] A3,
+//     input [1:0] S,
+//     output [31:0] Y
+// );
+//     assign Y = Y_out(A0, A1, A2, A3, S);
+//     function [31:0] Y_out;
+//         /* Write your code here */
+//     endfunction
+// endmodule
