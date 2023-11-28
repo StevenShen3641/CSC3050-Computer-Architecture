@@ -174,9 +174,6 @@ module INSTR_MEM (
         if (!(RAM[PC_in/4] != 32'hffffffff && change_sign == 0)) begin
             change_sign = 1;
         end
-        // else begin
-
-        // end
     end
 
     // finish help part
@@ -190,24 +187,3 @@ module INSTR_MEM (
     end
     assign inst_out = RAM[PC_in/4];
 endmodule
-
-
-
-
-
-
-
-// MUX4
-// module MUX4_BIT32 (
-//     input [31:0] A0,
-//     input [31:0] A1,
-//     input [31:0] A2,
-//     input [31:0] A3,
-//     input [1:0] S,
-//     output [31:0] Y
-// );
-//     assign Y = Y_out(A0, A1, A2, A3, S);
-//     function [31:0] Y_out;
-//         /* Write your code here */
-//     endfunction
-// endmodule

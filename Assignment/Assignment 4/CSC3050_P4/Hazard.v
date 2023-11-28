@@ -44,7 +44,6 @@ module HAZARD_UNIT (
         WriteReg_W,
         Rt_D
         );
-
     
     assign Flush_D = (PC_Src_S != 3'b000) ? 1 : 0;
 
@@ -95,7 +94,7 @@ module HAZARD_UNIT (
                 Forward_D = 1'b1;
             end
             else begin
-                Forward_D = 1'b0; // This is to make the code can run without the hazard handling capability.
+                Forward_D = 1'b0;
             end
         end
     endfunction
@@ -114,7 +113,7 @@ module HAZARD_UNIT (
                 Forward_E = 2'b10;
             end
             else begin
-                Forward_E = 2'b00; // This is to make the code can run without the hazard handling capability.
+                Forward_E = 2'b00;
             end
         end
     endfunction
@@ -144,7 +143,7 @@ module HAZARD_UNIT (
                 Stall = 1'b1;
             end
             else begin
-                Stall = 1'b0; // This is to make the code can run without the hazard handling capability.
+                Stall = 1'b0;
             end        
         end
     endfunction

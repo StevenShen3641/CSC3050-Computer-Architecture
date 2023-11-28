@@ -110,7 +110,7 @@ module REG_FILE (
     input [31:0] regD_data,
     input Jump_D,
     input [5:0] Opcode_D,
-    input [31:0] PC_pre,
+    input [31:0] PC_F,
     output wire [31:0] regA_data,
     output wire [31:0] regB_data
 );
@@ -132,19 +132,12 @@ module REG_FILE (
             simu_register[regD_addr] = regD_data;
         end
     end
-    // always@(posedge CLOCK) begin
-    //     $display("CLK");
-    // end
-    // always@(PC_pre) begin
-    //     $display("PC_pre");
-    //     $display(PC_pre);
-    // end
 
     // jal
     always@(Jump_D, Opcode_D) begin
         if (Jump_D == 1'b1 && Opcode_D == 6'b000011)
         begin
-            simu_register[31] <= PC_pre;
+            simu_register[31] <= PC_F;
         end
     end
 endmodule

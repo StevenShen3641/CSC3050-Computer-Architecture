@@ -176,7 +176,7 @@ module CPU (
         .regD_data (Result_W),
         .Jump_D (Jump_D),
         .Opcode_D (Opcode_D),
-        .PC_pre (PC_pre),
+        .PC_F (PC_F),
         .regA_data (regA_val_D), 
         .regB_data (regB_val_D)
     );
