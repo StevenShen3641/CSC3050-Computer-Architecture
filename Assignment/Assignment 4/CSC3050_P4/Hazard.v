@@ -1,5 +1,4 @@
-
-module HAZARD_UNIT (
+module HAZARD_UNIT(
     /* forward unit */
     input [5:0] Opcode_D,
     input [5:0] Funct_D,
@@ -27,38 +26,38 @@ module HAZARD_UNIT (
     output wire waiting
 );
     wire waiting_for_A = Forward_D(
-        RegWrite_E, 
-        RegWrite_M, 
-        RegWrite_W, 
+        RegWrite_E,
+        RegWrite_M,
+        RegWrite_W,
         WriteReg_E,
         WriteReg_M,
         WriteReg_W,
         Rs_D
         );
     wire waiting_for_B = Forward_D(
-        RegWrite_E, 
-        RegWrite_M, 
-        RegWrite_W, 
+        RegWrite_E,
+        RegWrite_M,
+        RegWrite_W,
         WriteReg_E,
         WriteReg_M,
         WriteReg_W,
         Rt_D
         );
-    
-    assign Flush_D = (PC_Src_S != 3'b000) ? 1 : 0;
 
-    assign waiting = (((waiting_for_A | waiting_for_B)) != 2'b0) ? 1 : 0;
+    assign Flush_D = (PC_Src_S != 3'b000) ? 1:0;
+
+    assign waiting = (((waiting_for_A | waiting_for_B)) != 2'b0) ? 1:0;
 
     assign ForwardA_E = Forward_E(
-        RegWrite_M, 
-        RegWrite_W, 
+        RegWrite_M,
+        RegWrite_W,
         WriteReg_M,
         WriteReg_W,
         Rs_E
         );
     assign ForwardB_E = Forward_E(
-        RegWrite_M, 
-        RegWrite_W, 
+        RegWrite_M,
+        RegWrite_W,
         WriteReg_M,
         WriteReg_W,
         Rt_E
@@ -136,16 +135,15 @@ module HAZARD_UNIT (
             else if (Opcode_D == 6'b000100 || Opcode_D == 6'b000101) begin
                 Stall = 1'b0;
             end
-            // You need to implement the stall unit for Data Hazard.
+                // You need to implement the stall unit for Data Hazard.
             else if ((MemtoReg_E == 1 && (Rs_D == WriteReg_E || Rt_D == WriteReg_E)) ||
-                     (MemtoReg_M == 1 && (Rs_D == WriteReg_M || Rt_D == WriteReg_M)) ||
-                     (MemtoReg_W == 1 && (Rs_D == WriteReg_W || Rt_D == WriteReg_W))) begin
+                (MemtoReg_M == 1 && (Rs_D == WriteReg_M || Rt_D == WriteReg_M)) ||
+                (MemtoReg_W == 1 && (Rs_D == WriteReg_W || Rt_D == WriteReg_W))) begin
                 Stall = 1'b1;
             end
             else begin
                 Stall = 1'b0;
-            end        
+            end
         end
     endfunction
-
 endmodule

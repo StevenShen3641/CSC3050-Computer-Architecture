@@ -1,5 +1,5 @@
 // The EX_MEM register, you need to do some implementation here
-module EX_MEM (
+module EX_MEM(
     input CLOCK,
     /* input from CONTROL_UNIT */
     input RegWrite_in,
@@ -25,7 +25,7 @@ module EX_MEM (
     output reg [31:0] WriteData_out,
     output reg [4:0] WriteReg_out
 );
-    always@(posedge CLOCK) begin
+    always @(posedge CLOCK) begin
         /* input from CONTROL_UNIT */
         RegWrite_out <= RegWrite_in;
         MemtoReg_out <= MemtoReg_in;
@@ -41,9 +41,8 @@ module EX_MEM (
 endmodule
 
 
-
 // The data memory
-module DATA_MEM (
+module DATA_MEM(
     input CLOCK,
     input MemWrite,
     input fin_sign,
@@ -56,27 +55,26 @@ module DATA_MEM (
     integer i;
 
     initial begin
-        for (i = 0; i <= 512-1; i=i+1) begin
+        for (i = 0; i <= 512-1; i = i+1) begin
             RAM[i] = 32'b0;
         end
     end
 
-    always@(posedge CLOCK) begin
+    always @(posedge CLOCK) begin
         if (MemWrite == 1'b1) begin
             RAM[ALUOut_in/4] = WriteData_in;
         end
     end
 
-    always@(fin_sign) begin
+    always @(fin_sign) begin
         if (fin_sign == 1'b1) begin
             out_file = $fopen("data.bin", "w");
-            for (i = 0; i <= 512-1; i = i + 1) begin
+            for (i = 0; i <= 512-1; i = i+1) begin
                 $fwrite(out_file, "%b\n", RAM[i]);
             end
             $finish;
-        end 
+        end
     end
-    
+
     assign ReadData_out = RAM[ALUOut_in/4];
-    
 endmodule

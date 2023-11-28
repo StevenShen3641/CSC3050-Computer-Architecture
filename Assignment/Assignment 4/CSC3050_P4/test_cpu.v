@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module cpu_test ();
+module cpu_test();
     // clock signal settings
     reg clock;
     parameter time_period = 10;
@@ -15,15 +15,7 @@ module cpu_test ();
         clock = 0;
     end
 
-    initial
-    begin
-        $dumpfile("wave.vcd"); //生成的vcd文件名称
-        $dumpvars(0, cpu_test); //tb模块名称
-    end
-
     always begin
-        #(time_period / 2) clock = ~clock;
+        #(time_period/2) clock = ~clock;
     end
-
-
 endmodule

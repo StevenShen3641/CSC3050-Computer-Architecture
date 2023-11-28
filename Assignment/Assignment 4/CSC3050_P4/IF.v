@@ -1,5 +1,5 @@
 // PC
-module PC (
+module PC(
     input CLOCK,
     input [31:0] PC_in,
     input Stall,
@@ -11,7 +11,7 @@ module PC (
     end
 
     // if no stalling
-    always@(posedge CLOCK) begin
+    always @(posedge CLOCK) begin
         if (Stall != 1'b1) begin
             PC_out <= PC_in;
         end
@@ -19,16 +19,16 @@ module PC (
 endmodule
 
 // PC_ADD4
-module PC_ADD4 (
+module PC_ADD4(
     input [31:0] PC_org,
     output wire [31:0] PC_add4
 );
-    assign PC_add4 = PC_org + 32'd4;
+    assign PC_add4 = PC_org+32'd4;
 endmodule
 
 // PC_SRC
 // select for PC_pre. Here the branch, jump, waiting inputs are used to handle branch and jump.
-module PC_SRC (
+module PC_SRC(
     input Branch,
     input Jump,
     input waiting,
@@ -67,38 +67,38 @@ module PC_SRC (
             if (Branch == 1'b1) begin
                 if ((Opcode == 6'b000100 && regA_val == regB_val)
                     || (Opcode == 6'b000101 && regA_val != regB_val))
-                begin
-                    if (waiting == 0) begin
-                        bj_S = 3'b001;
+                    begin
+                        if (waiting == 0) begin
+                            bj_S = 3'b001;
+                        end
+                        else if (waiting == 1) begin
+                            bj_S = 3'b100;
+                        end
                     end
-                    else if (waiting == 1) begin
-                        bj_S = 3'b100;
-                    end
-                end
                 else begin
                     bj_S = 3'b000;
                 end
             end
             else if (Jump == 1'b1) begin
-                if ((Opcode == 6'b000010 )
-                    | (Opcode == 6'b000011 ))
-                begin
-                    if (waiting == 0) begin
-                        bj_S = 3'b010;
+                if ((Opcode == 6'b000010)
+                    | (Opcode == 6'b000011))
+                    begin
+                        if (waiting == 0) begin
+                            bj_S = 3'b010;
+                        end
+                        else if (waiting == 1) begin
+                            bj_S = 3'b100;
+                        end
                     end
-                    else if (waiting == 1) begin
-                        bj_S = 3'b100;
-                    end
-                end
                 else if (Opcode == 6'b000000)
-                begin
-                    if (waiting == 0) begin
-                        bj_S = 3'b011;
+                    begin
+                        if (waiting == 0) begin
+                            bj_S = 3'b011;
+                        end
+                        else if (waiting == 1) begin
+                            bj_S = 3'b100;
+                        end
                     end
-                    else if (waiting == 1) begin
-                        bj_S = 3'b100;
-                    end
-                end
                 else begin
                     bj_S = 3'b000;
                 end
@@ -111,7 +111,7 @@ module PC_SRC (
 endmodule
 
 // MUX5: Choose PC_pre from add4, branch, jump, jr or waiting.
-module MUX5_BIT32 (
+module MUX5_BIT32(
     input [31:0] A0,
     input [31:0] A1,
     input [31:0] A2,
@@ -135,7 +135,7 @@ module MUX5_BIT32 (
         input [31:0] A3;
         input [31:0] A4;
         input [2:0] S;
-        case(S)
+        case (S)
             3'b000: Y_out = A0;
             3'b001: Y_out = A1;
             3'b010: Y_out = A2;
@@ -147,7 +147,7 @@ endmodule
 
 // INSTR_MEM
 // The instruction memory: fetch instruction based on PC
-module INSTR_MEM (
+module INSTR_MEM(
     input CLOCK,
     // instruction mem
     input [31:0] PC_in,
@@ -163,25 +163,25 @@ module INSTR_MEM (
     // read instr from file
     initial begin
         fin_sign = 0;
-        for (i = 0; i <= 512-1; i=i+1) begin
+        for (i = 0; i <= 512-1; i = i+1) begin
             RAM[i] = 32'b0;
         end
         $readmemb("CPU_instruction.bin", RAM);
     end
 
     // finish getting instr
-    always@(PC_in) begin
+    always @(PC_in) begin
         if (!(RAM[PC_in/4] != 32'hffffffff && change_sign == 0)) begin
             change_sign = 1;
         end
     end
 
     // finish help part
-    always@(posedge CLOCK) begin
+    always @(posedge CLOCK) begin
         if (change_sign == 1) begin
             cnt = cnt+1;
         end
-        if ( cnt == 3'b111) begin
+        if (cnt == 3'b111) begin
             fin_sign = 1;
         end
     end

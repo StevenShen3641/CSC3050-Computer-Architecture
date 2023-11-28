@@ -1,6 +1,6 @@
 // ID_EX
 // The ID_EX register, you need to do some implementation here.
-module ID_EX (
+module ID_EX(
     input CLOCK,
     /* input from CONTROL_UNIT */
     input RegWrite_in,
@@ -41,7 +41,7 @@ module ID_EX (
     /* others output */
     output reg [31:0] se_imme_out
 );
-    always@(posedge CLOCK) begin
+    always @(posedge CLOCK) begin
         regA_data_out <= regA_data_in;
         regB_data_out <= regB_data_in;
         Rs_out <= Rs_in;
@@ -76,7 +76,7 @@ endmodule
 
 
 // The ALU unit, you need to do some implementation here.
-module ALU (
+module ALU(
     input [31:0] SrcA,
     input [31:0] SrcB,
     input [4:0] SrcC,
@@ -129,12 +129,12 @@ module ALU (
                                 result_out = 32'b0;
                             end
                             else if ($signed(SrcA-SrcB) < 0) begin
-                                neg = 1'b1;
-                                result_out = 32'b1;
+                            neg = 1'b1;
+                            result_out = 32'b1;
                             end
                             else begin
-                                neg = 1'b0;
-                                result_out = 32'b0;
+                            neg = 1'b0;
+                            result_out = 32'b0;
                             end
                         end
                         6'h03:  // sra
@@ -191,7 +191,7 @@ module ALU (
 endmodule
 
 // MUX2_5: Choose writeReg to be rt or rd.
-module MUX2_BIT5 (
+module MUX2_BIT5(
     input [4:0] A0,
     input [4:0] A1,
     input S,
@@ -202,7 +202,7 @@ module MUX2_BIT5 (
         input [4:0] A0;
         input [4:0] A1;
         input S;
-        case(S)
+        case (S)
             1'b0: Y_out = A0;
             1'b1: Y_out = A1;
         endcase
@@ -211,7 +211,7 @@ endmodule
 
 // MUX2_32: Choose SrcB_E to be SrcB intermediate or signed immediate.
 // Also used in WB, choose Result_W to be ALU result or read data from memory.
-module MUX2_BIT32 (
+module MUX2_BIT32(
     input [31:0] A0,
     input [31:0] A1,
     /* 
@@ -226,7 +226,7 @@ module MUX2_BIT32 (
         input [31:0] A0;
         input [31:0] A1;
         input S;
-        case(S)
+        case (S)
             1'b0: Y_out = A0;
             1'b1: Y_out = A1;
         endcase
@@ -235,7 +235,7 @@ endmodule
 
 // MUX3: Choose intermediate result to be register value, 
 // ALU forwarding result or forwarding write back result.
-module MUX3_BIT32 (
+module MUX3_BIT32(
     input [31:0] A0,
     input [31:0] A1,
     input [31:0] A2,
@@ -253,7 +253,7 @@ module MUX3_BIT32 (
         input [31:0] A1;
         input [31:0] A2;
         input [1:0] S;
-        case(S)
+        case (S)
             2'b00: Y_out = A0;
             2'b01: Y_out = A1;
             2'b10: Y_out = A2;
