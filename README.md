@@ -1,6 +1,6 @@
 # CSC3050-Computer-Architecture
 
-Assignments implementation of CSC3050 Computer Architecture 2023 Fall.
+Assignment implementation of CSC3050 Computer Architecture 2023 Fall.
 
 Assignment 1: 100/100
 
